@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 #include "src.h"
 
@@ -41,7 +42,8 @@ int witness(long a, long b, long d, long p) {
   return 1;
  }
 long rand_long(long low, long up) {
-  return rang() % (up-low+1) + low;
+  srand(time(NULL));
+  return rand() % (up-low+1) + low;
 }
 int is_prime_miller(long p, int k) {
   if (p==2) return 1;
@@ -60,4 +62,12 @@ int is_prime_miller(long p, int k) {
     if (witness(a,b,d,p)) return 0;
   }
   return 1;
+}
+
+/*GENERATION DE NOMBRES PREMIERS*/
+long random_prime_number(int low_size, int up_size, int k) {
+  long random = rand_long(low_size,up_size);
+  while (!is_prime_miller(random,k)) 
+    random = rand_long(low_size,up_size);
+  return random;
 }

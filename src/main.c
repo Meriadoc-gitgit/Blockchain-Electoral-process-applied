@@ -4,6 +4,7 @@
 #include "src.h"
 
 int main(void) {
-  printf("13 is prime? %d\n",is_prime_naive(13));
+  long random = random_prime_number(100,10000,7);
+  printf("Prime generator: %ld\nPrime check: %d\n",random,is_prime_naive(random));
   return  0;
 }
