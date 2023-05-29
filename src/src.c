@@ -71,3 +71,24 @@ long random_prime_number(int low_size, int up_size, int k) {
     random = rand_long(low_size,up_size);
   return random;
 }
+
+
+/*IMPLEMENTATION DU PROTOCOLE RSA*/
+/*generatoin d'une paire (pub,sec)*/
+long extended_gcd(long s, long t, long *u,long *v) {
+  if (!s) {
+    *u=0;
+    *v=1;
+    return t;
+  }
+  long uPrim, vPrim;
+  long gcd = extended_gcd(t%s,s,&uPrim,&vPrim);
+  *u = vPrim - (t/s)*uPrim;
+  *v = uPrim;
+  return gcd;
+}
+void generate_key_values(long p, long q, long *n, long *s, long *u) {
+  *n = p*q;
+  long t = (p-1) * (q-1);
+  while(extended_gcd(*s,t,u,))
+}
