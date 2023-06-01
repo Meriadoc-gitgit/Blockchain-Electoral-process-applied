@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
 
 #include "src.h"
 
@@ -55,7 +56,7 @@ int is_prime_miller(long p, int k) {
     d/=2;
     b++;
   }
-  //generer k valeurs pour a, et teste si c'est un temoin : 
+  //generer k valeurs de a, et teste si c'est un temoin : 
   long a;
   for (int i=0;i<k;i++) {
     a = rand_long(2,p-1);
@@ -90,5 +91,30 @@ long extended_gcd(long s, long t, long *u,long *v) {
 void generate_key_values(long p, long q, long *n, long *s, long *u) {
   *n = p*q;
   long t = (p-1) * (q-1);
-  while(extended_gcd(*s,t,u,))
+  long v = 1;
+  long sPrim = random_prime_number(0,t,1000);
+  long uPrim = 0;
+  while (extended_gcd(sPrim,t,&uPrim,&v)!=1) 
+    sPrim = random_prime_number(0,t,1000);
+  *s = sPrim;
+  *u = uPrim;
+  return;
+}
+
+/*chiffrement et déchiffrement de messages*/
+long* encrypt(char* chaine, long s, long n) {
+  long* encr = (long*)malloc(sizeof(long)*strlen(chaine));
+  for(int i=0;chaine[i]!='\0';i++)
+    encr[i] = modpow((long)chaine[i],s,n);
+  return encr;
+}
+char* decrypt(long* crypted, long size, long u, long n) {
+  char* decr = (char*)malloc((size+1)*sizeof(char));
+  for(int i=0;i<size;i++) {
+    decr[i] = modpow(crypted[i],u,n);
+    printf("%ld %d %c\t",crypted[i],modpow(crypted[i],u,n),(char)(modpow(crypted[i],u,n) + n*5));
+  }
+  decr[size] = '\0';
+  printf("\n");3
+  return decr;
 }

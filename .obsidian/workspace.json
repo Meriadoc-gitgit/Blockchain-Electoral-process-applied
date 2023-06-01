@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "eccdcbd4dedcc106",
+        "id": "50ec7cf577346bd8",
         "type": "tabs",
         "children": [
           {
-            "id": "edb84002c3b42818",
+            "id": "b1c73e1505264b93",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -147,9 +147,20 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "edb84002c3b42818",
+  "active": "b1c73e1505264b93",
   "lastOpenFiles": [
-    "src/src-9f13caf4.o.tmp",
-    "src/src-f8389e89.o.tmp"
+    "src/main-1eb8067f.o.tmp",
+    "src/main-1eb69200.o.tmp",
+    "src/src.o",
+    "src/src-618d7c75.o.tmp",
+    "src/src-edf817e3.o.tmp",
+    "src/src-7d39f3c1.o.tmp",
+    "src/src-a062f587.o.tmp",
+    "src/src-ffddadbc.o.tmp",
+    "src/src-016397e7.o.tmp",
+    "src/src-58ff33e4.o.tmp",
+    "src/src-988806c9.o.tmp",
+    "desc/img/envoi-example.png",
+    "desc/p1.md"
   ]
 }

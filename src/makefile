@@ -14,7 +14,7 @@ main.o: main.c
 	gcc $(CFLAGS) -c main.c
 
 src.o: src.c 
-	gcc $(CFLAGS) -c src.c -lm
+	gcc $(CFLAGS) -c src.c
 
 clean:
 	rm -f *.o *~ $(PROGRAMS)

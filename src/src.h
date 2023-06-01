@@ -22,4 +22,8 @@ long random_prime_number(int low_size, int up_size, int k);
 /*generatoin d'une paire (pub,sec)*/
 long extended_gcd(long s, long t, long *u,long *v);
 void generate_key_values(long p, long q, long *n, long *s, long *u);
+
+/*chiffrement et déchiffrement de messages*/
+long* encrypt(char* chaine, long s, long n);
+char* decrypt(long* crypted, long size, long u, long n);
 #endif
