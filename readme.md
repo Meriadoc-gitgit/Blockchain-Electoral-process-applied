@@ -2,7 +2,7 @@
 Consideration: Organisation d'un processus electoral par scrutin uninominal majoritaire a 2 tours
 ## Processus
 1. [Implementation d'outils de cryptographie](desc/p1.md)
-2. [Creation d'un systeme de declarations securises par chiffrement asymetrique]()
+2. [Creation d'un systeme de declarations securises par chiffrement asymetrique](desc/p2.md)
 3. [Manipulation d'une base centralisee de declarations]()
 4. [Implementation d'un mecanisme de consensus]()
 5. [Manipulation d'une base decentralisee de declarations]()

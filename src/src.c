@@ -3,6 +3,7 @@
 #include <math.h>
 #include <time.h>
 #include <string.h>
+#include <limits.h>
 
 #include "src.h"
 
@@ -118,3 +119,62 @@ char* decrypt(Encrypted* crypted, long size, long u, long n) {
   decr[size] = '\0';
   return decr;
 }
+
+
+
+/*MANIPULATION DE STRUCTURES SECURISEES*/
+/*manipulation des cles*/
+void init_key(Key* key, long val, long n) {
+  key->val = val;
+  key->n = n;
+  return;
+}
+void init_pair_keys(Key* pKey, Key* sKey, long low_size, long up_size) {
+  /*Generer 2 premiers p et q*/
+  long p = random_prime_number(low_size,up_size,5000);
+  long q = random_prime_number(low_size,up_size,5000);
+  while (p==q) 
+    q = random_prime_number(low_size,up_size,5000);
+
+  /*generer les 2 cles publiques et secretes*/
+  long n, s, u;
+  generate_key_values(p,q,&n,&s,&u);
+
+  //pour avoir des cles positives
+  if (u<0) {
+    long t = (p-1)*(q-1);
+    u+=t; //on aura toujours s*u mod t = 1
+  }
+  //initialiser les cles publiques et secretes
+  init_key(pKey,s,n);
+  init_key(sKey,u,n);
+  return;
+}
+char* key_to_str(Key* key) {
+  char res[INT_MAX];
+  sprintf(res,"(%lx,%lx)",key->val,key->n);
+  return res;
+}
+Key* str_to_key(char* str) {
+  long val, n;
+  sscanf(str,"(%lx,%lx)",&val,&n);
+  Key* key = (Key*)malloc(sizeof(Key));
+  init_key(key,val,n);
+  return key;
+}
+
+
+/*signature*/
+Signature* init_signature(Encrypted* content, int size) {
+  Signature* sgn = (Signature*)malloc(sizeof(Signature));
+  sgn->content = (Encrypted*)malloc(sizeof(Encrypted)*size);
+  sgn->size = size;
+  return sgn;
+}
+Signature* sign(char* mess, Key* sKey) {
+  return init_signature(encrypt(mess,sKey->val,sKey->n),(int)strlen(mess));
+}
+char* signature_to_str(Signature* sgn) {
+  
+}
+Signature* str_to_signature(char* str);

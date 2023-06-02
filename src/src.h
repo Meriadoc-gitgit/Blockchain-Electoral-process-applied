@@ -2,7 +2,7 @@
 #define SRC_H
 
 /*Structure used to enhance decryption*/
-typedef struct encr {
+typedef struct _encr {
   long mod;
   int res;
 } Encrypted;
@@ -32,4 +32,32 @@ void generate_key_values(long p, long q, long *n, long *s, long *u);
 /*chiffrement et déchiffrement de messages*/
 Encrypted* encrypt(char* chaine, long s, long n);
 char* decrypt(Encrypted* crypted, long size, long u, long n);
+
+
+//============================================
+
+/*PART 2*/
+/*DECLARATIONS SECURISEES*/
+/*Structure for key manipulation*/
+typedef struct _key {
+  long val;
+  long n;
+} Key;
+
+/*manipulation des cles*/
+void init_key(Key* key, long val, long n);
+void init_pair_keys(Key* pKey, Key* sKey, long low_size, long up_size);
+char* key_to_str(Key* key);
+Key* str_to_key(char* str);
+
+/*signature*/
+typedef struct _sign {
+	Encrypted* content;
+	int size;
+} Signature;
+
+Signature* init_signature(Encrypted* content, int size);
+Signature* sign(char* mess, Key* sKey);
+char* signature_to_str(Signature* sgn);
+Signature* str_to_signature(char* str);
 #endif

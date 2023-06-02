@@ -69,6 +69,5 @@ int main(void) {
   char* decoded = decrypt(crypted,len,u,n);
   printf("Decoded: %s\n",decoded);
 
-
   return 0;
 }
