@@ -102,19 +102,19 @@ void generate_key_values(long p, long q, long *n, long *s, long *u) {
 }
 
 /*chiffrement et déchiffrement de messages*/
-long* encrypt(char* chaine, long s, long n) {
-  long* encr = (long*)malloc(sizeof(long)*strlen(chaine));
-  for(int i=0;chaine[i]!='\0';i++)
-    encr[i] = modpow((long)chaine[i],s,n);
+Encrypted* encrypt(char* chaine, long s, long n) {
+  Encrypted* encr = (Encrypted*)malloc(sizeof(Encrypted)*strlen(chaine));
+  for(int i=0;chaine[i]!='\0';i++) {
+    encr[i].mod = modpow((long)chaine[i],s,n);
+    encr[i].res = floor((int)chaine[i]/n);
+  }
   return encr;
 }
-char* decrypt(long* crypted, long size, long u, long n) {
+char* decrypt(Encrypted* crypted, long size, long u, long n) {
   char* decr = (char*)malloc((size+1)*sizeof(char));
   for(int i=0;i<size;i++) {
-    decr[i] = modpow(crypted[i],u,n);
-    printf("%ld %d %c\t",crypted[i],modpow(crypted[i],u,n),(char)(modpow(crypted[i],u,n) + n*5));
+    decr[i] = modpow(crypted[i].mod,u,n) + crypted[i].res*n;
   }
   decr[size] = '\0';
-  printf("\n");3
   return decr;
 }

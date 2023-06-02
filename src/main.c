@@ -5,10 +5,10 @@
 
 #include "src.h"
 
-void print_long_vector(long *result, int size) {
+void print_long_vector(Encrypted *result, int size) {
   printf("Vector: [");
   for(int i=0; i<size;i++) {
-    printf("%lx \t",result[i]);
+    printf("%lx \t",result[i].mod);
   }
   printf("]\n");
   return;
@@ -22,13 +22,15 @@ int main(void) {
 
   printf("TEST=========\n");
   printf("test of extended_gcd: %ld\nu: %ld\nv: %ld",extended_gcd(random_prime_number(1,100,7),3,&u,&v),u,v);
+  
 
   long p = 3, q = 11;
   long n, s, uK;
   generate_key_values(p,q,&n,&s,&uK);
   printf("Key generator\np: %ld\ns: %ld\nu: %ld\n",p,s,uK);
-  */
 
+  */
+  
   srand(time(NULL));
 
   //Generation de cle: 
@@ -36,6 +38,9 @@ int main(void) {
   long q = random_prime_number(3,7,5000);
   while (p==q) 
     q = random_prime_number(3,7,5000);
+
+  printf("p: %ld, q: %ld\n",p,q);
+
   long n, s, u;
   generate_key_values(p,q,&n,&s,&u);
 
@@ -54,7 +59,7 @@ int main(void) {
   //Chiffrement:
   char mess[10] = "Hello";
   int len = strlen(mess);
-  long* crypted = encrypt(mess,s,n);
+  Encrypted* crypted = encrypt(mess,s,n);
 
   printf("Initial message: %s\n",mess);
   printf("Encoded representation: \n");
@@ -63,6 +68,7 @@ int main(void) {
   //Dechiffrement
   char* decoded = decrypt(crypted,len,u,n);
   printf("Decoded: %s\n",decoded);
+
 
   return 0;
 }

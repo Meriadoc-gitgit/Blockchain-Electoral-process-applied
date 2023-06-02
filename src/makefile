@@ -1,7 +1,7 @@
 CFLAGS = -Wall -g -Wno-unused-parameter
 CC = gcc
 
-PROGRAMS = test 
+PROGRAMS = test temp
 
 .PHONY: all clean 
 

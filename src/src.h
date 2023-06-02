@@ -1,6 +1,12 @@
 #ifndef SRC_H
 #define SRC_H
 
+/*Structure used to enhance decryption*/
+typedef struct encr {
+  long mod;
+  int res;
+} Encrypted;
+
 /*PART 1*/
 /*RESOLUTION DU PROBLEME DE PRIMALITE*/
 int is_prime_naive(long p);
@@ -24,6 +30,6 @@ long extended_gcd(long s, long t, long *u,long *v);
 void generate_key_values(long p, long q, long *n, long *s, long *u);
 
 /*chiffrement et déchiffrement de messages*/
-long* encrypt(char* chaine, long s, long n);
-char* decrypt(long* crypted, long size, long u, long n);
+Encrypted* encrypt(char* chaine, long s, long n);
+char* decrypt(Encrypted* crypted, long size, long u, long n);
 #endif
