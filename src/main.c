@@ -5,10 +5,10 @@
 
 #include "src.h"
 
-void print_long_vector(Encrypted *result, int size) {
+void print_long_vector(long *result, int size) {
   printf("Vector: [");
   for(int i=0; i<size;i++) {
-    printf("%lx \t",result[i].mod);
+    printf("%lx \t",result[i]);
   }
   printf("]\n");
   return;
@@ -23,21 +23,20 @@ int main(void) {
   printf("TEST=========\n");
   printf("test of extended_gcd: %ld\nu: %ld\nv: %ld",extended_gcd(random_prime_number(1,100,7),3,&u,&v),u,v);
   
-
+  
   long p = 3, q = 11;
   long n, s, uK;
   generate_key_values(p,q,&n,&s,&uK);
   printf("Key generator\np: %ld\ns: %ld\nu: %ld\n",p,s,uK);
-
-  */
   
+  */
   srand(time(NULL));
 
   //Generation de cle: 
-  long p = random_prime_number(3,7,5000);
-  long q = random_prime_number(3,7,5000);
+  long p = random_prime_number(3,20,5000);
+  long q = random_prime_number(3,20,5000);
   while (p==q) 
-    q = random_prime_number(3,7,5000);
+    q = random_prime_number(3,100,5000);
 
   printf("p: %ld, q: %ld\n",p,q);
 
@@ -48,8 +47,9 @@ int main(void) {
 
   //Pour avoir des cles positives: 
   if (u<0) {
-    long t = (p-1)*(q-1);
-    u+=t; //on aura toujours s*u mod t = 1
+    //long t = (p-1)*(q-1);
+    //u+=t; //on aura toujours s*u mod t = 1
+    u = -u;
   }
 
   //Affichage des cles en hexadecimal
@@ -59,7 +59,7 @@ int main(void) {
   //Chiffrement:
   char mess[10] = "Hello";
   int len = strlen(mess);
-  Encrypted* crypted = encrypt(mess,s,n);
+  long* crypted = encrypt(mess,s,n);
 
   printf("Initial message: %s\n",mess);
   printf("Encoded representation: \n");
@@ -69,5 +69,8 @@ int main(void) {
   char* decoded = decrypt(crypted,len,u,n);
   printf("Decoded: %s\n",decoded);
 
+  printf("%d\n",modpow(2603,2011,3127));
+  long tmp = 1;
+  printf("%lx\n",tmp);
   return 0;
 }

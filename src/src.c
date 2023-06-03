@@ -20,10 +20,9 @@ int is_prime_naive(long p) {
 /*EXPONENTATION MODULAIRE RAPIDE*/
 long modpow_naive(long a, long m, long n) {
   long res = 1;
-  while(m>0) {
+  while(m--) {
     res*=a; //multiplier la valeur courante par a
-    res = res%n; //applique mod n sur le resultat avant de passer a l'iteration suivante
-    m--; //decrementer m en fin de boucle
+    res%=n; //applique mod n sur le resultat avant de passer a l'iteration suivante
   }
   return res;
 }
@@ -95,26 +94,27 @@ void generate_key_values(long p, long q, long *n, long *s, long *u) {
   long v = 1;
   long sPrim = random_prime_number(0,t,1000);
   long uPrim = 0;
-  while (extended_gcd(sPrim,t,&uPrim,&v)!=1) 
+  while (extended_gcd(sPrim,t,&uPrim,&v)!=1 || sPrim==uPrim) {
     sPrim = random_prime_number(0,t,1000);
+  }
+  //printf("s: %ld u: %ld\n",sPrim,uPrim);
   *s = sPrim;
   *u = uPrim;
   return;
 }
 
 /*chiffrement et déchiffrement de messages*/
-Encrypted* encrypt(char* chaine, long s, long n) {
-  Encrypted* encr = (Encrypted*)malloc(sizeof(Encrypted)*strlen(chaine));
+long* encrypt(char* chaine, long s, long n) {
+  long* encr = (long*)malloc(sizeof(long)*strlen(chaine));
   for(int i=0;chaine[i]!='\0';i++) {
-    encr[i].mod = modpow((long)chaine[i],s,n);
-    encr[i].res = floor((int)chaine[i]/n);
+    encr[i] = modpow((long)chaine[i],s,n);
   }
   return encr;
 }
-char* decrypt(Encrypted* crypted, long size, long u, long n) {
+char* decrypt(long* crypted, long size, long u, long n) {
   char* decr = (char*)malloc((size+1)*sizeof(char));
   for(int i=0;i<size;i++) {
-    decr[i] = modpow(crypted[i].mod,u,n) + crypted[i].res*n;
+    decr[i] = modpow(crypted[i],u,n);
   }
   decr[size] = '\0';
   return decr;
@@ -151,7 +151,7 @@ void init_pair_keys(Key* pKey, Key* sKey, long low_size, long up_size) {
   return;
 }
 char* key_to_str(Key* key) {
-  char res[INT_MAX];
+  char* res = (char*)malloc(INT_MAX);
   sprintf(res,"(%lx,%lx)",key->val,key->n);
   return res;
 }
@@ -165,9 +165,9 @@ Key* str_to_key(char* str) {
 
 
 /*signature*/
-Signature* init_signature(Encrypted* content, int size) {
+Signature* init_signature(long* content, int size) {
   Signature* sgn = (Signature*)malloc(sizeof(Signature));
-  sgn->content = (Encrypted*)malloc(sizeof(Encrypted)*size);
+  sgn->content = content;
   sgn->size = size;
   return sgn;
 }
@@ -175,6 +175,23 @@ Signature* sign(char* mess, Key* sKey) {
   return init_signature(encrypt(mess,sKey->val,sKey->n),(int)strlen(mess));
 }
 char* signature_to_str(Signature* sgn) {
-  
+  char* result = (char*)malloc(INT_MAX);
+  result[0] = '#';
+  int pos = 1;
+  char buffer[256];
+  for(int i=0;i<sgn->size;i++) {
+    sprintf(buffer,"%lx",sgn->content[i]);
+    for(int j=0;j<strlen(buffer);j++) {
+      result[pos] = buffer[j];
+      pos++;
+    }
+    result[pos] = '#';
+    pos++;
+  }
+  result[pos] = '\0';
+  result = realloc(result,(pos+1)*sizeof(char));
+  return result;
 }
-Signature* str_to_signature(char* str);
+Signature* str_to_signature(char* str) {
+  return NULL;
+}

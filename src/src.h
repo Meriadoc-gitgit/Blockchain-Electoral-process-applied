@@ -1,12 +1,6 @@
 #ifndef SRC_H
 #define SRC_H
 
-/*Structure used to enhance decryption*/
-typedef struct _encr {
-  long mod;
-  int res;
-} Encrypted;
-
 /*PART 1*/
 /*RESOLUTION DU PROBLEME DE PRIMALITE*/
 int is_prime_naive(long p);
@@ -30,8 +24,8 @@ long extended_gcd(long s, long t, long *u,long *v);
 void generate_key_values(long p, long q, long *n, long *s, long *u);
 
 /*chiffrement et déchiffrement de messages*/
-Encrypted* encrypt(char* chaine, long s, long n);
-char* decrypt(Encrypted* crypted, long size, long u, long n);
+long* encrypt(char* chaine, long s, long n);
+char* decrypt(long* crypted, long size, long u, long n);
 
 
 //============================================
@@ -52,11 +46,11 @@ Key* str_to_key(char* str);
 
 /*signature*/
 typedef struct _sign {
-	Encrypted* content;
+	long* content;
 	int size;
 } Signature;
 
-Signature* init_signature(Encrypted* content, int size);
+Signature* init_signature(long* content, int size);
 Signature* sign(char* mess, Key* sKey);
 char* signature_to_str(Signature* sgn);
 Signature* str_to_signature(char* str);
