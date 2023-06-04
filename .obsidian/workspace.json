@@ -13,8 +13,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "desc/p1.md",
-                "mode": "preview",
+                "file": "desc/p2.md",
+                "mode": "source",
                 "source": false
               }
             }
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "desc/p1.md",
+                "file": "desc/p2.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "desc/p1.md",
+                "file": "desc/p2.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "desc/p1.md"
+                "file": "desc/p2.md"
               }
             }
           }
@@ -149,6 +149,7 @@
   },
   "active": "c9e55ce38f022c8d",
   "lastOpenFiles": [
+    "desc/p1.md",
     "src/main-59ec70ee.o.tmp",
     "src/main-e9e87e10.o.tmp",
     "src/src-77c16ef0.o.tmp",
@@ -159,10 +160,8 @@
     "src/main-766a98f1.o.tmp",
     "src/main-56828b75.o.tmp",
     "src/main-0bcfc764.o.tmp",
-    "src/main-5e269a06.o.tmp",
     "desc/p2.md",
     "readme.md",
-    "desc/p1.md",
     "desc/img/envoi-example.png"
   ]
 }

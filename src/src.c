@@ -114,7 +114,7 @@ long* encrypt(char* chaine, long s, long n) {
 char* decrypt(long* crypted, long size, long u, long n) {
   char* decr = (char*)malloc((size+1)*sizeof(char));
   for(int i=0;i<size;i++) {
-    decr[i] = modpow(crypted[i],u,n);
+    decr[i] = (char)modpow(crypted[i],u,n);
   }
   decr[size] = '\0';
   return decr;
@@ -193,5 +193,47 @@ char* signature_to_str(Signature* sgn) {
   return result;
 }
 Signature* str_to_signature(char* str) {
-  return NULL;
+  int len = strlen(str);
+  long* content = (long*)malloc(sizeof(long)*len);
+  int num = 0;
+  char buffer[256];
+  int pos = 0;
+  for(int i=0;i<len;i++) {
+    if (str[i]!='#') {
+      buffer[pos] = str[i];
+      pos++;
+    } else {
+      if (pos) {
+        buffer[pos] = '\0';
+        sscanf(buffer,"%lx",&(content[num]));
+        num++;
+        pos = 0;
+      }
+    }
+  }
+  content = realloc(content,num*sizeof(long));
+  return init_signature(content,num);
+}
+
+
+/*declarations signes*/
+Protected* init_protected(Key* pKey, char* mess, Signature* sgn) {
+  Protected* pr = (Protected*)malloc(sizeof(Protected));
+  pr->pKey = pKey;
+  pr->mess = strdup(mess);
+  pr->sgn = sgn;
+  return pr;
+}
+int verify(Protected* pr) {
+  return strcmp(pr->mess,decrypt(pr->sgn->content,pr->sgn->size,pr->pKey->val,pr->pKey->n)) == 0;
+}
+char* protected_to_str(Protected* pr) {
+  char* chaine = (char*)malloc(INT_MAX);
+  sprintf(chaine,"%s\t%s\t%s",key_to_str(pr->pKey),pr->mess,signature_to_str(pr->sgn));
+  return chaine;
+}
+Protected* str_to_protected(char* chaine) {
+  char key[256], mess[256], sign[256];
+  sscanf(chaine,"%s\t%s\t%s",key,mess,sign);
+  return init_protected(str_to_key(key),mess,str_to_signature(sign));
 }
