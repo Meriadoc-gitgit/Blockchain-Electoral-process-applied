@@ -15,63 +15,58 @@ void print_long_vector(long *result, int size) {
 }
 
 int main(void) {
-  /*
-  long u = 0, v = 1;
-  long random = random_prime_number(100,10000,7);
-  printf("Prime generator: %ld\nPrime check: %d\n",random,is_prime_naive(random));
-
-  printf("TEST=========\n");
-  printf("test of extended_gcd: %ld\nu: %ld\nv: %ld",extended_gcd(random_prime_number(1,100,7),3,&u,&v),u,v);
   
-  
-  long p = 3, q = 11;
-  long n, s, uK;
-  generate_key_values(p,q,&n,&s,&uK);
-  printf("Key generator\np: %ld\ns: %ld\nu: %ld\n",p,s,uK);
-
-  //cần chia ra thành các loại khác nhau theo bảng ascii
-  
-  */
   srand(time(NULL));
-
-  //Generation de cle: 
-  /*
-  long p = random_prime_number(3,7,500);
-  long q = random_prime_number(3,7,500);
-  */
-  long p=3, q=2011;
-  while (p==q) 
-    q = random_prime_number(3,100,5000);
-
-  printf("p: %ld, q: %ld\n",p,q);
-
-  long n, s, u;
-  generate_key_values(p,q,&n,&s,&u);
-
-  printf("n: %ld\n",n);
-
-  //Pour avoir des cles positives: 
-  if (u<0) {
-    long t = (p-1)*(q-1);
-    u+=t; //on aura toujours s*u mod t = 1
-  }
-
-  //Affichage des cles en hexadecimal
-  printf("cle publique = (%lx, %lx)\n", s, n);
-  printf("cle privee = (%lx, %lx)\n", u, n);
   
-  //Chiffrement:
-  char mess[10] = "Hello";
-  int len = strlen(mess);
-  long* crypted = encrypt(mess,s,n);
+  //Testing Init Keys
+  Key* pKey = (Key*)malloc(sizeof(Key));
+  Key* sKey = (Key*)malloc(sizeof(Key));
+  init_pair_keys(pKey,sKey,3,7);
+  printf("pKey: %lx, %lx\n",pKey->val, pKey->n);
+  printf("sKey: %lx, %lx\n",sKey->val, sKey->n);
 
-  printf("Initial message: %s\n",mess);
-  printf("Encoded representation: \n");
-  print_long_vector(crypted,len);
+  //Testing Key Serialization
+  char* chaine = key_to_str(pKey);
+  printf("key_to_str: %s\n",chaine);
+  Key* k = str_to_key(chaine);
+  printf("str_to_key: %lx, %lx\n",k->val,k->n);
 
-  //Dechiffrement
-  char* decoded = decrypt(crypted,len,u,n);
-  printf("Decoded: %s\n",decoded);
+  //Testing signature
+  //Candidate keys: 
+  Key* pKeyC = (Key*)malloc(sizeof(Key));
+  Key* sKeyC = (Key*)malloc(sizeof(Key));
+  init_pair_keys(pKeyC,sKeyC,3,7);
+
+  //Declaration
+  char* mess = key_to_str(pKeyC);
+  printf("mess: %s\n",mess);
+  printf("%s vote pour %s\n",key_to_str(pKey),mess);
+  Signature* sgn = sign(mess,sKey);
+  printf("signature: ");
+  print_long_vector(sgn->content,sgn->size);
+  chaine = signature_to_str(sgn);
+  printf("signature_to_str: %s\n",chaine);
+  sgn = str_to_signature(chaine);
+  printf("str_to_signature: ");
+  print_long_vector(sgn->content,sgn->size);
+
+  //Testing protected
+  Protected* pr = init_protected(pKey,mess,sgn);
+  //Verification
+  if(verify(pr)) {
+    printf("Signature valide\n");
+  } else {
+    printf("Signature non valide\n");
+  }
+  chaine = protected_to_str(pr);
+  printf("protected_to_str: %s\n",chaine);
+  pr = str_to_protected(chaine);
+  printf("str_to_protected: %s %s %s\n",key_to_str(pr->pKey),pr->mess,signature_to_str(pr->sgn));
+
+  free(pKey);
+  free(sKey);
+  free(pKeyC);
+  free(sKeyC);
 
   return 0;
 }

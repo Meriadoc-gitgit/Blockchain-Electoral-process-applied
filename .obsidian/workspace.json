@@ -14,7 +14,7 @@
               "type": "markdown",
               "state": {
                 "file": "desc/p2.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               }
             }
@@ -149,17 +149,18 @@
   },
   "active": "c9e55ce38f022c8d",
   "lastOpenFiles": [
+    "src/main-39e4f23e.o.tmp",
+    "src/src-543c7eb3.o.tmp",
+    "src/src-d4954ddb.o.tmp",
+    "src/main.o",
+    "src/main-bcb06d27.o.tmp",
+    "src/main-2c9fb21e.o.tmp",
+    "src/main-944fe3dc.o.tmp",
+    "src/src-77986688.o.tmp",
+    "src/main-d6f9aea8.o.tmp",
+    "src/src-9b8b1039.o.tmp",
+    "src/main-263c259e.o.tmp",
     "desc/p1.md",
-    "src/main-59ec70ee.o.tmp",
-    "src/main-e9e87e10.o.tmp",
-    "src/src-77c16ef0.o.tmp",
-    "src/src-37954493.o.tmp",
-    "src/src-28cf8d6f.o.tmp",
-    "src/main-73d08a7f.o.tmp",
-    "src/main-5cf8c4b4.o.tmp",
-    "src/main-766a98f1.o.tmp",
-    "src/main-56828b75.o.tmp",
-    "src/main-0bcfc764.o.tmp",
     "desc/p2.md",
     "readme.md",
     "desc/img/envoi-example.png"
