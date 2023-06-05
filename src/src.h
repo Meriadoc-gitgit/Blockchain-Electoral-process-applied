@@ -67,4 +67,7 @@ Protected* init_protected(Key* pKey, char* mess, Signature* sgn);
 int verify(Protected* pr);
 char* protected_to_str(Protected* pr);
 Protected* str_to_protected(char* chaine);
+
+/*creation de donnees pour simuler le processus de vote*/
+void generate_random_data(int nv, int nc);
 #endif

@@ -4,6 +4,7 @@
 #include <time.h>
 #include <string.h>
 #include <limits.h>
+#include <sys/stat.h>
 
 #include "src.h"
 
@@ -131,13 +132,12 @@ void init_key(Key* key, long val, long n) {
 }
 void init_pair_keys(Key* pKey, Key* sKey, long low_size, long up_size) {
   /*Generer 2 premiers p et q*/
-  /*
+  
   long p = random_prime_number(low_size,up_size,5000);
-  long q = random_prime_number(low_size,up_size,5000);
-  while (p==q) 
-    q = random_prime_number(low_size,up_size,5000);
-  */
-  long p = 3, q = 2011; //afin de maintenir une bonne generation de cle, vu que toutes operations deviennent mediocre si une des 2 cles est trop petite par rapport a la table ASCII
+  long q = random_prime_number(low_size,45,5000);
+  while (p==q || q<43) 
+    q = random_prime_number(low_size,45,5000);
+  
 
   /*generer les 2 cles publiques et secretes*/
   long n, s, u;
@@ -239,4 +239,19 @@ Protected* str_to_protected(char* chaine) {
   char key[256], mess[256], sign[256];
   sscanf(chaine,"%s\t%s\t%s",key,mess,sign);
   return init_protected(str_to_key(key),mess,str_to_signature(sign));
+}
+
+/*creation de donnees pour simuler le processus de vote*/
+struct stat st = {0}; //structure pour la verification de l'existence d'un fichier dans l'environnement
+int exists(long* tab, int taille, long val) {
+  while (taille--) {
+    if (tab[taille-1]==val) return 1;
+  }
+  return 0;
+}
+void generate_random_data(int nv, int nc) {
+  if (stat("keys.txt",&st)==-1) {
+    system("echo > keys.txt");
+  }
+  
 }
