@@ -131,10 +131,13 @@ void init_key(Key* key, long val, long n) {
 }
 void init_pair_keys(Key* pKey, Key* sKey, long low_size, long up_size) {
   /*Generer 2 premiers p et q*/
+  /*
   long p = random_prime_number(low_size,up_size,5000);
   long q = random_prime_number(low_size,up_size,5000);
   while (p==q) 
     q = random_prime_number(low_size,up_size,5000);
+  */
+  long p = 3, q = 2011; //afin de maintenir une bonne generation de cle, vu que toutes operations deviennent mediocre si une des 2 cles est trop petite par rapport a la table ASCII
 
   /*generer les 2 cles publiques et secretes*/
   long n, s, u;
