@@ -8,6 +8,8 @@
 
 #include "src.h"
 
+
+
 /*PART 1*/
 /*RESOLUTION DU PROBLEME DE PRIMALITE*/
 int is_prime_naive(long p) {
@@ -244,36 +246,34 @@ Protected* str_to_protected(char* chaine) {
 /*creation de donnees pour simuler le processus de vote*/
 struct stat st = {0}; //structure pour la verification de l'existence d'un fichier dans l'environnement
 int exists(Key** tab, int taille, long val) {
-  while (taille--) {
-    if (tab[taille-1]->val==val) return 1;
+  int i=0;
+  while (i<taille) {
+    if (tab[i]->val==val) return 1;
+    printf("ok");
+    i++;
   }
   return 0;
 }
 void generate_random_data(int nv, int nc) {
+  srand(time(NULL));
   if (stat("keys.txt",&st)==-1) {
     system("echo > keys.txt");
   }
 
-  FILE* f = fopen("keys.txt","w");
-  long s, u; //(public, private) key
-  long n;
-
-  //randomize 2 prime numbers p and q
-  long p = random_prime_number(3,7,5000);
-  long q = random_prime_number(3,200,5000);
-  printf("%ld %ld\n",p,q);
-
   Key* public_key_src[nv];
-  Key* pKey = NULL;
+  Key* pKey = (Key*)malloc(sizeof(Key));
+  Key* sKey = (Key*)malloc(sizeof(Key));
   int i = 0;
+  printf("ok\n");
+  FILE* f = fopen("keys.txt","w");
+  fprintf(f,"test\n");
   while (i<nv) {
-    generate_key_values(p,q,&n,&s,&u);
-    if (!exists(public_key_src,nv,s)) {
-      init_key(pKey,s,n);
-      public_key_src[i] = pKey;
-      fprintf(f,"(%lx,%lx)\n",s,u);
-      i++;
-    }
+    printf("%d\n",i);
+    init_pair_keys(pKey,sKey,3,200);
+    fprintf(f,"(%lx,%lx)\n",pKey->val,sKey->val);
+    public_key_src[i] = pKey;
+    printf("(%lx,%lx)\n",pKey->val,sKey->val);
+    i++;
   }
   fclose(f);
 
@@ -286,11 +286,9 @@ void generate_random_data(int nv, int nc) {
   Key* candidate_key_src[nc];
   while (i<nc) {
     int rdm = rand() % nv;
-    if (!exists(candidate_key_src,nc,public_key_src[rdm]->val)) {
-      candidate_key_src[i] = public_key_src[rdm];
+    candidate_key_src[i] = public_key_src[rdm];
       fprintf(f,"%s\n",key_to_str(public_key_src[rdm]));
       i++;
-    }
   }
   fclose(f);
 
