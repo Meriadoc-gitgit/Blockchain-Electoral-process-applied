@@ -4,7 +4,6 @@
 #include <time.h>
 #include <string.h>
 #include <limits.h>
-#include <sys/stat.h>
 
 #include "src.h"
 
@@ -244,66 +243,42 @@ Protected* str_to_protected(char* chaine) {
 }
 
 /*creation de donnees pour simuler le processus de vote*/
-struct stat st = {0}; //structure pour la verification de l'existence d'un fichier dans l'environnement
-int exists(Key** tab, int taille, long val) {
-  int i=0;
-  while (i<taille) {
-    if (tab[i]->val==val) return 1;
-    printf("ok");
-    i++;
-  }
-  return 0;
-}
 void generate_random_data(int nv, int nc) {
   srand(time(NULL));
-  if (stat("keys.txt",&st)==-1) {
-    system("echo > keys.txt");
-  }
+  char buff[20000*sizeof(char)];
 
-  Key* public_key_src[nv];
+  //nv couples de cles (publique, secrete) des nv citoyens
+  Key* l_key[nv];
   Key* pKey = (Key*)malloc(sizeof(Key));
   Key* sKey = (Key*)malloc(sizeof(Key));
-  int i = 0;
-  printf("ok\n");
-  FILE* f = fopen("keys.txt","w");
-  fprintf(f,"test\n");
-  while (i<nv) {
-    printf("%d\n",i);
+  for (int i=0;i<nv;i++) {
     init_pair_keys(pKey,sKey,3,200);
-    fprintf(f,"(%lx,%lx)\n",pKey->val,sKey->val);
-    public_key_src[i] = pKey;
-    printf("(%lx,%lx)\n",pKey->val,sKey->val);
-    i++;
+    sprintf(buff,"%s(%lx,%lx)\n",buff,pKey->val,sKey->val);
+    l_key[i] = pKey;
+    printf("%lx\n",l_key[i]->val);
   }
+  FILE* f = fopen("keys.txt","w");
+  fprintf(f,"%s",buff);
   fclose(f);
 
+  Key* l_candidat[nc];
+  int i=0;
+  long rdm;
+  while (i<nc) {
+    srand(time(NULL));
+    rdm = rand_long(0,nv);
+    printf("rdm: %ld\n",rdm);
+    l_candidat[i] = l_key[rdm];
+    i++;
+  }
 
-  if (stat("candidates.txt",&st)==-1) {
-    system("echo > candidates.txt");
+  char buff_c[nv*100*sizeof(char)];
+  for (int j=0;j<nc;j++) {
+    sprintf(buff_c,"%s%s\n",buff_c,key_to_str(l_candidat[j]));
   }
   f = fopen("candidates.txt","w");
-  i = 0;
-  Key* candidate_key_src[nc];
-  while (i<nc) {
-    int rdm = rand() % nv;
-    candidate_key_src[i] = public_key_src[rdm];
-      fprintf(f,"%s\n",key_to_str(public_key_src[rdm]));
-      i++;
-  }
+  fprintf(f,"%s",buff_c);
   fclose(f);
-
-
-  if (stat("declarations.txt",&st)==-1) {
-    system("echo > declarations.txt");
-  }
-  i = 0;
-  f = fopen("declarations.txt","w");
-  while (i<nv) {
-    int rdm = rand() % nc;
-    Signature* sgn = sign(key_to_str(candidate_key_src[rdm]),public_key_src[i]);
-    fprintf(f,"%s\n",signature_to_str(sgn));
-    i++;
-  }
-  fclose(f);
+  
   return;
 }
