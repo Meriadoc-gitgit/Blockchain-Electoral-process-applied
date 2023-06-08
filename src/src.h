@@ -70,4 +70,20 @@ Protected* str_to_protected(char* chaine);
 
 /*creation de donnees pour simuler le processus de vote*/
 void generate_random_data(int nv, int nc);
+
+
+
+/*BASE DE DECLARATION CENTRALISEE*/
+/*Lecture et stockage des données dans des listes de chainées*/
+typedef struct cellKey {
+	Key* data;
+	struct cellKey* next;
+} CellKey;
+
+CellKey* create_cell_key(Key* key);
+void insert_cell_key(CellKey** c, Key* key);
+CellKey* read_public_keys(char* file);
+void print_list_keys(CellKey* LCK);
+void delete_cell_keys(CellKey* c);
+void delete_list_keys(CellKey* c);
 #endif

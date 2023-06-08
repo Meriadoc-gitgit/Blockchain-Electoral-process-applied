@@ -306,3 +306,39 @@ void generate_random_data(int nv, int nc) {
 }
 
 
+
+
+
+
+/*BASE DE DECLARATION CENTRALISEE*/
+/*Lecture et stockage des données dans des listes de chainées*/
+CellKey* create_cell_key(Key* key) {
+  CellKey* c = (CellKey*)malloc(sizeof(CellKey));
+  c->data = key;
+  c->next = NULL;
+  return c;
+}
+void insert_cell_key(CellKey** c, Key* key) {
+  if (!(*c)) *c = create_cell_key(key);
+  CellKey* tmp = create_cell_key(key);
+  tmp->next = *c;
+  *c = tmp;
+  return;
+}
+CellKey* read_public_keys(char* file) {
+  FILE* f = fopen(file,"r");
+  char buffer[256];
+  long val, n;
+  CellKey* c = NULL;
+  while (fgets(buffer,256,f)) {
+    Key* key = (Key*)malloc(sizeof(Key));
+    sscanf(buffer,"(%lx,%lx)\n",&val,&n);
+    printf("%s\n",buffer);
+    init_key(key,val,n); 
+    insert_cell_key(&c,key);
+  }
+  return c;
+}
+void print_list_keys(CellKey* LCK);
+void delete_cell_keys(CellKey* c);
+void delete_list_keys(CellKey* c);

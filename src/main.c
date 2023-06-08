@@ -43,5 +43,28 @@ int main(void) {
   printf("(%lx,%lx)\n",pKey->val,sKey->val);
   */
 
+
+
+
+  Key* key = (Key*)malloc(sizeof(Key));
+  init_key(key,10,5);
+  Key* key2 = (Key*)malloc(sizeof(Key));
+  init_key(key2,15,5);
+  CellKey* c = create_cell_key(key);
+  printf("%ld\n",c->data->val);
+
+  insert_cell_key(&c,key2);
+  printf("%ld\n",c->next->data->val);
+  printf("%ld\n",c->data->val);
+
+  c = NULL; 
+  insert_cell_key(&c,key2);
+  printf("%ld\n",c->data->val);
+
+  c = read_public_keys("keys.txt");
+  while (c) { 
+    printf("%lx\n",c->data->val);
+    c = c->next;
+  }
   return 0;
 }
