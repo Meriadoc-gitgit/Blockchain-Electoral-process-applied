@@ -21,6 +21,8 @@ int main(void) {
   while (n--) {
     printf("%d\n",rand()%10);
   }
+
+
   /*
   FILE* f = fopen("keys.txt","w");
   int i = 0; long n = 10;
@@ -29,6 +31,7 @@ int main(void) {
     i++;
   }
   */
+  printf("\n\ngenerate test \n\n");
   generate_random_data(10,5);
   /*
   Key* pKey = (Key*)malloc(sizeof(Key));

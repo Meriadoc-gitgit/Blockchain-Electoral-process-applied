@@ -249,6 +249,7 @@ Protected* str_to_protected(char* chaine) {
 /*creation de donnees pour simuler le processus de vote*/
 void generate_random_data(int nv, int nc) {
   srand(time(NULL));
+  
   char buff[20000*sizeof(char)];
 
   //nv couples de cles (publique, secrete) des nv citoyens
@@ -259,7 +260,7 @@ void generate_random_data(int nv, int nc) {
     init_pair_keys(pKey,sKey,3,200);
     sprintf(buff,"%s(%lx,%lx)\n",buff,pKey->val,sKey->val);
     l_key[i] = pKey;
-    printf("%lx\n",l_key[i]->val);
+    //printf("%lx\n",l_key[i]->val);
   }
   FILE* f = fopen("keys.txt","w");
   fprintf(f,"%s",buff);
@@ -269,17 +270,8 @@ void generate_random_data(int nv, int nc) {
   //list candidates de nc couples de cles publiques choisies aleatoirement
   Key* l_candidat[nc];
   int i=0;
-  long rdm[nc];
   while (i<nc) {
-    srand(time(NULL));
-    rdm[i] = rand_long(0,nv);
-    printf("rdm: %ld\n",rdm[i]);
-    i++;
-  }
-
-  i=0;
-  while (i<nc) {
-    l_candidat[i] = l_key[rdm[i]];
+    l_candidat[i] = l_key[rand()%nv];
     i++;
   }
 
@@ -289,6 +281,15 @@ void generate_random_data(int nv, int nc) {
   }
   f = fopen("candidates.txt","w");
   fprintf(f,"%s",buff_c);
+  fclose(f);
+
+
+  f = fopen("declarations.txt","w");
+  char buff_d[20000*sizeof(char)];
+  for (i=0;i<nv;i++) {
+    sprintf(buff_d,"%s%s\n",buff_d,signature_to_str(sign(key_to_str(l_candidat[rand()%nc]),l_key[i])));
+  }
+  fprintf(f,"%s",buff_d);
   fclose(f);
   
   return;
