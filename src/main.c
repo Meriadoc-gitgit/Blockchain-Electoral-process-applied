@@ -17,6 +17,10 @@ void print_long_vector(long *result, int size) {
 int main(void) {
   
   srand(time(NULL));
+  int n=10;
+  while (n--) {
+    printf("%d\n",rand()%10);
+  }
   /*
   FILE* f = fopen("keys.txt","w");
   int i = 0; long n = 10;

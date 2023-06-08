@@ -242,6 +242,10 @@ Protected* str_to_protected(char* chaine) {
   return init_protected(str_to_key(key),mess,str_to_signature(sign));
 }
 
+
+
+
+
 /*creation de donnees pour simuler le processus de vote*/
 void generate_random_data(int nv, int nc) {
   srand(time(NULL));
@@ -261,14 +265,21 @@ void generate_random_data(int nv, int nc) {
   fprintf(f,"%s",buff);
   fclose(f);
 
+
+  //list candidates de nc couples de cles publiques choisies aleatoirement
   Key* l_candidat[nc];
   int i=0;
-  long rdm;
+  long rdm[nc];
   while (i<nc) {
     srand(time(NULL));
-    rdm = rand_long(0,nv);
-    printf("rdm: %ld\n",rdm);
-    l_candidat[i] = l_key[rdm];
+    rdm[i] = rand_long(0,nv);
+    printf("rdm: %ld\n",rdm[i]);
+    i++;
+  }
+
+  i=0;
+  while (i<nc) {
+    l_candidat[i] = l_key[rdm[i]];
     i++;
   }
 
