@@ -29,9 +29,12 @@ long modpow_naive(long a, long m, long n) {
   return res;
 }
 int modpow(long a, long m, long n) {
-  if (m==0) return 1; //si m=0, cas de base
-  else if (m%2==0) return (modpow(a,m/2,n) * modpow(a,m/2,n)) % n; //m est pair
-  else return (a * modpow(a,floor(m/2),n) * modpow(a,floor(m/2),n)) % n; //m est impair
+  if (m==0) 
+    return 1; //si m=0, cas de base
+  else if (m%2==0) 
+    return (modpow(a,m/2,n) * modpow(a,m/2,n)) % n; //m est pair
+  else 
+    return (a * modpow(a,floor(m/2),n) * modpow(a,floor(m/2),n)) % n; //m est impair
 }
 
 /*TEST DE MILLER-RABIN*/
@@ -45,7 +48,7 @@ int witness(long a, long b, long d, long p) {
   return 1;
  }
 long rand_long(long low, long up) {
-  srand(time(NULL));
+  //srand(time(NULL));
   return rand() % (up-low+1) + low;
 }
 int is_prime_miller(long p, int k) {
@@ -69,6 +72,7 @@ int is_prime_miller(long p, int k) {
 
 /*GENERATION DE NOMBRES PREMIERS*/
 long random_prime_number(int low_size, int up_size, int k) {
+  //srand(time(NULL));
   long random = rand_long(low_size,up_size);
   while (!is_prime_miller(random,k)) 
     random = rand_long(low_size,up_size);
@@ -248,49 +252,57 @@ Protected* str_to_protected(char* chaine) {
 
 /*creation de donnees pour simuler le processus de vote*/
 void generate_random_data(int nv, int nc) {
-  srand(time(NULL));
+  //srand(time(NULL));
   
-  char buff[20000*sizeof(char)];
+  char buff[2000*sizeof(long)];
 
   //nv couples de cles (publique, secrete) des nv citoyens
-  Key* l_key[nv];
+  Key** l_key = (Key**)malloc(sizeof(Key*)*nv);
   Key* pKey = (Key*)malloc(sizeof(Key));
   Key* sKey = (Key*)malloc(sizeof(Key));
   for (int i=0;i<nv;i++) {
     init_pair_keys(pKey,sKey,3,200);
+    l_key[i] = (Key*)malloc(sizeof(Key));
+    l_key[i]->val = pKey->val;
+    l_key[i]->n = pKey->n;
     sprintf(buff,"%s(%lx,%lx)\n",buff,pKey->val,sKey->val);
-    l_key[i] = pKey;
-    //printf("%lx\n",l_key[i]->val);
+    //printf("l_key: %lx\n",l_key[i]->val);
   }
   FILE* f = fopen("keys.txt","w");
   fprintf(f,"%s",buff);
   fclose(f);
 
-
   //list candidates de nc couples de cles publiques choisies aleatoirement
-  Key* l_candidat[nc];
+  Key** l_candidat = (Key**)malloc(sizeof(Key*)*nc);
+;
   int i=0;
+  char buff_c[2000*sizeof(long)];
   while (i<nc) {
-    l_candidat[i] = l_key[rand()%nv];
+    long rdm = rand_long(0,nv);
+    //printf("rdm: %ld\n",rdm);
+    l_candidat[i] = (Key*)malloc(sizeof(Key));
+    l_candidat[i]->val = l_key[rdm]->val;
+    l_candidat[i]->n = l_key[rdm]->n;
+    sprintf(buff_c,"%s%s\n",buff_c,key_to_str(l_candidat[i]));
     i++;
   }
 
-  char buff_c[nv*100*sizeof(char)];
-  for (int j=0;j<nc;j++) {
-    sprintf(buff_c,"%s%s\n",buff_c,key_to_str(l_candidat[j]));
-  }
   f = fopen("candidates.txt","w");
   fprintf(f,"%s",buff_c);
   fclose(f);
 
 
   f = fopen("declarations.txt","w");
-  char buff_d[20000*sizeof(char)];
+  char buff_d[2000*sizeof(long)];
   for (i=0;i<nv;i++) {
-    sprintf(buff_d,"%s%s\n",buff_d,signature_to_str(sign(key_to_str(l_candidat[rand()%nc]),l_key[i])));
+    long rdm = rand_long(0,nc);
+    //printf("rdm2: %ld\n",rdm);
+    sprintf(buff_d,"%s%s\n",buff_d,signature_to_str(sign(key_to_str(l_candidat[rdm]),l_key[i])));
   }
   fprintf(f,"%s",buff_d);
   fclose(f);
   
   return;
 }
+
+

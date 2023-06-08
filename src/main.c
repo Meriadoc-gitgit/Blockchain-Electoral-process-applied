@@ -19,7 +19,8 @@ int main(void) {
   srand(time(NULL));
   int n=10;
   while (n--) {
-    printf("%d\n",rand()%10);
+    printf("PRIME: %ld\n",random_prime_number(3,200,5000));
+    printf("RAND_LONG: %ld\n",rand_long(3,200));
   }
 
 
@@ -31,8 +32,8 @@ int main(void) {
     i++;
   }
   */
-  printf("\n\ngenerate test \n\n");
-  generate_random_data(10,5);
+  //printf("\n\ngenerate test \n\n");
+  //generate_random_data(5,3); 
   /*
   Key* pKey = (Key*)malloc(sizeof(Key));
   Key* sKey = (Key*)malloc(sizeof(Key));
