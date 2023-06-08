@@ -265,7 +265,7 @@ void generate_random_data(int nv, int nc) {
     l_key[i] = (Key*)malloc(sizeof(Key));
     l_key[i]->val = pKey->val;
     l_key[i]->n = pKey->n;
-    sprintf(buff,"%s(%lx,%lx)\n",buff,pKey->val,sKey->val);
+    sprintf(buff,"%s%s\n",buff,key_to_str(pKey));
     //printf("l_key: %lx\n",l_key[i]->val);
   }
   FILE* f = fopen("keys.txt","w");
