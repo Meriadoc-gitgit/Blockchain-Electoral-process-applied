@@ -331,14 +331,37 @@ CellKey* read_public_keys(char* file) {
   long val, n;
   CellKey* c = NULL;
   while (fgets(buffer,256,f)) {
-    Key* key = (Key*)malloc(sizeof(Key));
     sscanf(buffer,"(%lx,%lx)\n",&val,&n);
-    printf("%s\n",buffer);
-    init_key(key,val,n); 
+    Key* key = (Key*)malloc(sizeof(Key));
+    init_key(key,val,n);
     insert_cell_key(&c,key);
   }
+  fclose(f);
   return c;
 }
-void print_list_keys(CellKey* LCK);
-void delete_cell_keys(CellKey* c);
-void delete_list_keys(CellKey* c);
+void print_list_keys(CellKey* LCK) {
+  if (!LCK) {
+    printf("Empty cell\n");
+    return;
+  }
+  while (LCK) {
+    printf("%s\n",key_to_str(LCK->data));
+    LCK = LCK->next;
+  }
+  return;
+}
+void delete_cell_keys(CellKey* c) {
+  free(c->data);
+  c->data = c->next->data;
+  c->next = c->next->next;
+  return;
+}
+void delete_list_keys(CellKey* c) {
+  CellKey* tmp;
+  while (c) {
+    tmp = c->next;
+    free(c->data);
+    c = tmp;
+  }
+  return;
+}

@@ -62,9 +62,8 @@ int main(void) {
   printf("%ld\n",c->data->val);
 
   c = read_public_keys("keys.txt");
-  while (c) { 
-    printf("%lx\n",c->data->val);
-    c = c->next;
-  }
+  //delete_cell_keys(c);
+  delete_list_keys(c);
+  print_list_keys(c);
   return 0;
 }
