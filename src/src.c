@@ -340,7 +340,7 @@ CellKey* read_public_keys(char* file) {
   return c;
 }
 void print_list_keys(CellKey* LCK) {
-  if (!LCK) {
+  if (LCK==NULL) {
     printf("Empty cell\n");
     return;
   }
@@ -357,11 +357,9 @@ void delete_cell_keys(CellKey* c) {
   return;
 }
 void delete_list_keys(CellKey* c) {
-  CellKey* tmp;
-  while (c) {
-    tmp = c->next;
-    free(c->data);
-    c = tmp;
+  while (c->next) {
+    delete_cell_keys(c);
+    c = c->next;
   }
   return;
 }
