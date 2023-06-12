@@ -75,6 +75,8 @@ void generate_random_data(int nv, int nc);
 
 /*BASE DE DECLARATION CENTRALISEE*/
 /*Lecture et stockage des données dans des listes de chainées*/
+
+//Liste chainee de cle
 typedef struct cellKey {
 	Key* data;
 	struct cellKey* next;
@@ -86,4 +88,18 @@ CellKey* read_public_keys(char* file);
 void print_list_keys(CellKey* LCK);
 void delete_cell_keys(CellKey* c);
 void delete_list_keys(CellKey* c);
+
+//Liste chainee de declarations signees
+typedef struct cellProtected {
+	Protected* data;
+	struct cellProtected* next;
+} CellProtected;
+
+CellProtected* create_cell_protected(Protected* pr);
+void insert_cell_protected(CellProtected** cp, Protected* pr);
+CellProtected* read_protected(char* file);
+void print_list_protected(CellProtected* LCP);
+void delete_cell_protected(CellProtected* c);
+void delete_list_protected(CellProtected* c);
+
 #endif

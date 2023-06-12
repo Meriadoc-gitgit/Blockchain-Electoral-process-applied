@@ -312,6 +312,8 @@ void generate_random_data(int nv, int nc) {
 
 /*BASE DE DECLARATION CENTRALISEE*/
 /*Lecture et stockage des données dans des listes de chainées*/
+
+//Liste chainee de cles
 CellKey* create_cell_key(Key* key) {
   CellKey* c = (CellKey*)malloc(sizeof(CellKey));
   c->data = key;
@@ -320,13 +322,23 @@ CellKey* create_cell_key(Key* key) {
 }
 void insert_cell_key(CellKey** c, Key* key) {
   if (!(*c)) *c = create_cell_key(key);
-  CellKey* tmp = create_cell_key(key);
-  tmp->next = *c;
-  *c = tmp;
+  else {
+    CellKey* tmp = create_cell_key(key);
+    tmp->next = *c;
+    *c = tmp;
+  }
   return;
 }
 CellKey* read_public_keys(char* file) {
+  if (strcmp(file,"keys.txt")!=0 && strcmp(file,"candidates.txt")!=0) { 
+    printf("Invalid file for candidates keys\n");
+    return NULL;
+  }
   FILE* f = fopen(file,"r");
+  if (!f) {
+    printf("Unable to open %s\n",file);
+    return NULL;
+  }
   char buffer[256];
   long val, n;
   CellKey* c = NULL;
@@ -340,7 +352,7 @@ CellKey* read_public_keys(char* file) {
   return c;
 }
 void print_list_keys(CellKey* LCK) {
-  if (LCK==NULL) {
+  if (LCK==NULL || (LCK->data->n==0 && LCK->data->val==0)) {
     printf("Empty cell\n");
     return;
   }
@@ -351,15 +363,49 @@ void print_list_keys(CellKey* LCK) {
   return;
 }
 void delete_cell_keys(CellKey* c) {
+  if (!c->next) {
+    free(c);
+    return;
+  }
+  CellKey* tmp = c->next;
   free(c->data);
-  c->data = c->next->data;
-  c->next = c->next->next;
+  free(c);
+  c->data = tmp->data;
+  c->next = tmp->next;
+  
   return;
 }
 void delete_list_keys(CellKey* c) {
-  while (c->next) {
+  CellKey* tmp;
+  while (c) {
+    if (c->next) tmp = c->next;
+    else {
+      delete_cell_keys(c);
+      break;
+    }
     delete_cell_keys(c);
-    c = c->next;
+    c = tmp;
   }
   return;
 }
+
+//Liste chainee de declarations signees
+CellProtected* create_cell_protected(Protected* pr) {
+  CellProtected* cp = (CellProtected*)malloc(sizeof(CellProtected));
+  cp->data = pr;
+  cp->next = NULL;
+  return cp;
+}
+void insert_cell_protected(CellProtected** cp, Protected* pr) {
+  if (!(*cp)) *cp = create_cell_protected(pr);
+  else {
+    CellProtected* tmp = create_cell_protected(pr);
+    tmp->next = *cp;
+    *cp = tmp;
+  }
+  return;
+}
+CellProtected* read_protected(char* file);
+void print_list_protected(CellProtected* LCP);
+void delete_cell_protected(CellProtected* c);
+void delete_list_protected(CellProtected* c);

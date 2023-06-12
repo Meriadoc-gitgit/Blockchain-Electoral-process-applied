@@ -64,21 +64,12 @@ int main(void) {
   c = read_public_keys("keys.txt");
   printf("\ntest de read_public_keys\n");
   print_list_keys(c);
-  delete_cell_keys(c);
   printf("\ntest de delete_cell_keys\n");
-  //delete_list_keys(c);
+  //delete_cell_keys(c);
+  print_list_keys(c);
+  printf("\ntest de delete_list_keys\n");
+  delete_list_keys(c);
   print_list_keys(c);
 
-
-
-
-  while (c->next) {
-    printf("print ok\n");
-    delete_cell_keys(c);
-    c = c->next;
-  }
-
-  printf("ok\n");
-  print_list_keys(c);
   return 0;
 }
