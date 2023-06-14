@@ -80,7 +80,6 @@ int main(void) {
   //print_list_protected(cp);
   printf("\ntest de delete_list_protected\n");
   delete_list_protected(cp);
-  //printf("%s\n",protected_to_str(cp->data));
   //print_list_protected(cp);
 
   

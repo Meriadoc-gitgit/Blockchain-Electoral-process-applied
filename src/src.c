@@ -435,7 +435,7 @@ CellProtected* read_protected(char* file) {
   return cp;
 }
 void print_list_protected(CellProtected* LCP) {
-  if (LCP==NULL) { 
+  if (!LCP) { 
     printf("No signed declaration found\n");
     return;
   }
@@ -460,6 +460,7 @@ void delete_cell_protected(CellProtected* c) {
 }
 void delete_list_protected(CellProtected* c) {
   CellProtected* tmp;
+  printf("\n\n");
   while (c) {
     if (c->next) tmp = c->next;
     else {
@@ -468,6 +469,8 @@ void delete_list_protected(CellProtected* c) {
     }
     delete_cell_protected(c);
     c = tmp;
+    print_list_protected(c);
+    printf("\n\n");
   }
   return;
 }
