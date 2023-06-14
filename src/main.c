@@ -41,11 +41,10 @@ int main(void) {
   init_pair_keys(pKey,sKey,3,200);
   fprintf(f,"(%lx,%lx)\n",pKey->val,sKey->val);
   printf("(%lx,%lx)\n",pKey->val,sKey->val);
-  */
 
 
 
-
+  
   Key* key = (Key*)malloc(sizeof(Key));
   init_key(key,10,5);
   Key* key2 = (Key*)malloc(sizeof(Key));
@@ -60,8 +59,8 @@ int main(void) {
   c = NULL; 
   insert_cell_key(&c,key2);
   printf("%ld\n",c->data->val);
-
-  c = read_public_keys("keys.txt");
+  
+  CellKey* c = read_public_keys("keys.txt");
   printf("\ntest de read_public_keys\n");
   print_list_keys(c);
   printf("\ntest de delete_cell_keys\n");
@@ -70,6 +69,25 @@ int main(void) {
   printf("\ntest de delete_list_keys\n");
   delete_list_keys(c);
   print_list_keys(c);
+  */
 
+  ///*
+  CellProtected* cp = read_protected("declarations.txt");
+  printf("\ntest de read_public_protected\n");
+  print_list_protected(cp);
+  //printf("\ntest de delete_cell_protected\n");
+  //delete_cell_protected(cp);
+  //print_list_protected(cp);
+  printf("\ntest de delete_list_protected\n");
+  delete_list_protected(cp);
+  //printf("%s\n",protected_to_str(cp->data));
+  //print_list_protected(cp);
+
+  
+  Protected* p = str_to_protected("#1c5#260#671#442#762#765#a46#63a#260#47d#208#");
+
+  //printf("%s\t%s\t%s\n",key_to_str(p->pKey),p->mess,signature_to_str(p->sgn));
+  
+  //*/
   return 0;
 }

@@ -237,12 +237,12 @@ int verify(Protected* pr) {
 }
 char* protected_to_str(Protected* pr) {
   char* chaine = (char*)malloc(INT_MAX);
-  sprintf(chaine,"%s\t%s\t%s",key_to_str(pr->pKey),pr->mess,signature_to_str(pr->sgn));
+  sprintf(chaine,"%s %s %s",key_to_str(pr->pKey),pr->mess,signature_to_str(pr->sgn));
   return chaine;
 }
 Protected* str_to_protected(char* chaine) {
   char key[256], mess[256], sign[256];
-  sscanf(chaine,"%s\t%s\t%s",key,mess,sign);
+  sscanf(chaine,"%s %s %s",key,mess,sign);
   return init_protected(str_to_key(key),mess,str_to_signature(sign));
 }
 
@@ -297,7 +297,15 @@ void generate_random_data(int nv, int nc) {
   for (i=0;i<nv;i++) {
     long rdm = rand_long(0,nc);
     //printf("rdm2: %ld\n",rdm);
-    sprintf(buff_d,"%s%s\n",buff_d,signature_to_str(sign(key_to_str(l_candidat[rdm]),l_key[i])));
+    Protected* p = init_protected(l_key[i],key_to_str(l_candidat[rdm]),sign(key_to_str(l_candidat[rdm]),l_key[i]));
+
+    sprintf(buff_d,"%s%s\n",buff_d,
+
+    protected_to_str(p)
+
+    );
+
+    printf("protected: %s\n",protected_to_str(p));
   }
   fprintf(f,"%s",buff_d);
   fclose(f);
@@ -340,12 +348,12 @@ CellKey* read_public_keys(char* file) {
     return NULL;
   }
   char buffer[256];
-  long val, n;
+  //long val, n;
   CellKey* c = NULL;
   while (fgets(buffer,256,f)) {
-    sscanf(buffer,"(%lx,%lx)\n",&val,&n);
-    Key* key = (Key*)malloc(sizeof(Key));
-    init_key(key,val,n);
+    //sscanf(buffer,"(%lx,%lx)\n",&val,&n);
+    Key* key = str_to_key(buffer);
+    //init_key(key,val,n);
     insert_cell_key(&c,key);
   }
   fclose(f);
@@ -364,6 +372,7 @@ void print_list_keys(CellKey* LCK) {
 }
 void delete_cell_keys(CellKey* c) {
   if (!c->next) {
+    free(c->data);
     free(c);
     return;
   }
@@ -372,7 +381,6 @@ void delete_cell_keys(CellKey* c) {
   free(c);
   c->data = tmp->data;
   c->next = tmp->next;
-  
   return;
 }
 void delete_list_keys(CellKey* c) {
@@ -405,7 +413,61 @@ void insert_cell_protected(CellProtected** cp, Protected* pr) {
   }
   return;
 }
-CellProtected* read_protected(char* file);
-void print_list_protected(CellProtected* LCP);
-void delete_cell_protected(CellProtected* c);
-void delete_list_protected(CellProtected* c);
+CellProtected* read_protected(char* file) {
+  if (strcmp(file,"declarations.txt")!=0) {
+    printf("Invalid file for signed declarations");
+    return NULL;
+  }
+  FILE* f = fopen(file,"r");
+  if (!f) {
+    printf("Unable to open %s\n",file);
+    return NULL;
+  }
+  char buffer[2000];
+  //char key[500], mess[500],sgn[500];
+  CellProtected* cp = NULL;
+  while (fgets(buffer,256,f)) {
+    //printf("buffer: %s\n",buffer);
+    Protected* p = str_to_protected(buffer);
+    insert_cell_protected(&cp,p);
+  }
+  fclose(f);
+  return cp;
+}
+void print_list_protected(CellProtected* LCP) {
+  if (LCP==NULL) { 
+    printf("No signed declaration found\n");
+    return;
+  }
+  while(LCP) {
+    printf("%s\n",protected_to_str(LCP->data));
+    LCP = LCP->next;
+  }
+  return;
+}
+void delete_cell_protected(CellProtected* c) {
+  if (!c->next) {
+    free(c->data);
+    free(c);
+    return;
+  }
+  CellProtected* tmp = c->next;
+  free(c->data);
+  free(c);
+  c->data = tmp->data;
+  c->next = tmp->next;
+  return;
+}
+void delete_list_protected(CellProtected* c) {
+  CellProtected* tmp;
+  while (c) {
+    if (c->next) tmp = c->next;
+    else {
+      delete_cell_protected(c);
+      break;
+    }
+    delete_cell_protected(c);
+    c = tmp;
+  }
+  return;
+}
