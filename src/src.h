@@ -123,6 +123,6 @@ int hash_function(Key* key, int size);
 int find_position(HashTable* t, Key* key);
 HashTable* create_hashtable(CellKey* keys, int size);
 void delete_hashtable(HashTable* t);
-Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizev);
+Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV);
 
 #endif

@@ -8,7 +8,6 @@
 #include "src.h"
 
 
-
 /*PART 1*/
 /*RESOLUTION DU PROBLEME DE PRIMALITE*/
 int is_prime_naive(long p) {
@@ -505,11 +504,78 @@ int find_position(HashTable* t, Key* key) {
       return i;
     }
   }
-  printf("Table full, no data found\n");
+  printf("Memory limit exceeded, no data found\n");
   return -1;
 }
 HashTable* create_hashtable(CellKey* keys, int size) {
-  
+  HashTable* hv = (HashTable*)malloc(sizeof(HashTable));
+  hv->size = size;
+  while (keys) {
+    int pos = hash_function(keys,hv->size);
+    if (!hv->tab[pos]) 
+      hv->tab[pos] = create_hashcell(keys);
+    else {
+      int succ = 0;
+      for (int i=pos;i<hv->size;i++) {
+        if (!hv->tab[i]) {
+          succ = 1;
+          hv->tab[i] = create_hashcell(keys);
+        }
+      }
+      if (succ==0) {
+        printf("Memory limit exceeded. Unable to add keys to database\n");
+      }
+    }
+    keys = keys->next;
+  }
+  return hv;
 }
-void delete_hashtable(HashTable* t);
-Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizev);
+void delete_hashtable(HashTable* t) {
+  for (int i=0;i<t->size;i++) {
+    free(t->tab[i]->key);
+    free(t->tab[i]);
+  }
+  free(t->tab);
+  free(t);
+  return;
+}
+Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV) {
+  HashTable* hc = create_hashtable(candidates,sizeC);
+  HashTable* hv = create_hashtable(voters,sizeV);
+  violation_filter(decl);
+  while(decl) {
+    Key* candidat = str_to_key(decl->data->mess);
+    Key* voter = decl->data->pKey;
+    int pos_cand = find_position(hc,candidat);
+    int pos_voter = find_position(hv,voter);
+    if (pos_cand==-1 || pos_voter==-1) {
+      printf("Candidate or voter unavailable\n");
+      return NULL;
+    }
+    else if (!(hc->tab[pos_cand]->key->val!=candidat->val && hc->tab[pos_cand]->key->n!=candidat->n)) {
+      printf("Candidate information error\n");
+      return NULL;
+    }
+    else if (!(hv->tab[pos_voter]->key->val!=voter->val && hv->tab[pos_voter]->key->n!=voter->n)) {
+      printf("Voter information error\n");
+      return NULL;
+    }
+    else if (hv->tab[pos_voter]==1) {
+      printf("Voter violation\n");
+      return NULL;
+    }
+    else {
+      hc->tab[pos_cand]++;
+      hv->tab[pos_voter] = 1;
+    }
+    decl = decl->next;
+  }
+
+  HashCell** tab = hc->tab;
+  int winner = 0;
+  for (int i=0;i<hc->size;i++) {
+    if (tab[i]->val>winner)
+      winner = tab[i]->val;
+  }
+  return tab[winner];
+}
