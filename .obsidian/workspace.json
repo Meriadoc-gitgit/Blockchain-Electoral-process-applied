@@ -4,19 +4,15 @@
     "type": "split",
     "children": [
       {
-        "id": "561c803ef9a8f082",
+        "id": "b52c96b4d56643f0",
         "type": "tabs",
         "children": [
           {
-            "id": "c96e4c52992618d7",
+            "id": "f715c7e30097528b",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "desc/p3.md",
-                "mode": "source",
-                "source": false
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -86,7 +82,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "desc/p3.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +98,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "desc/p3.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,9 +119,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "desc/p3.md"
-              }
+              "state": {}
             }
           }
         ]
@@ -147,8 +139,9 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "c96e4c52992618d7",
+  "active": "f715c7e30097528b",
   "lastOpenFiles": [
+    "desc/p3.md",
     "src/src.o",
     "src/src-153d91d8.o.tmp",
     "src/src-9ca593c3.o.tmp",
@@ -159,8 +152,6 @@
     "src/src-09d7c78f.o.tmp",
     "src/main-bcb4e7b4.o.tmp",
     "src/src-9deb7153.o.tmp",
-    "src/src-22b8e846.o.tmp",
-    "desc/p3.md",
     "desc/p2.md",
     "desc/p1.md",
     "readme.md",

@@ -486,9 +486,30 @@ void violation_filter(CellProtected* cp) {
   }
   return;
 }
-HashCell* create_hashcell(Key* key);
-int hash_function(Key* key, int size);
-int find_position(HashTable* t, Key* key);
-HashTable* create_hashtable(CellKey* keys, int size);
+HashCell* create_hashcell(Key* key) {
+  HashCell* hc = (HashCell*)malloc(sizeof(HashCell));
+  hc->key = key;
+  hc->val = 0;
+  return hc;
+}
+int hash_function(Key* key, int size) {
+  return key->val % size;
+}
+int find_position(HashTable* t, Key* key) {
+  int pos = hash_function(key,t->size);
+  for (int i=pos;i<t->size;i++) {
+    if (t->tab[i]->key->val==key->val && t->tab[i]->key->n==key->val) 
+      return i;
+    else if (t->tab[i]->key->val==0 && t->tab[i]->key->n==0) {
+      printf("This candidate suppose to be in the position no.%d\n",i);
+      return i;
+    }
+  }
+  printf("Table full, no data found\n");
+  return -1;
+}
+HashTable* create_hashtable(CellKey* keys, int size) {
+  
+}
 void delete_hashtable(HashTable* t);
 Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizev);
