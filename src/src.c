@@ -4,6 +4,7 @@
 #include <time.h>
 #include <string.h>
 #include <limits.h>
+//#include <openssl/sha.h>
 
 #include "src.h"
 
@@ -511,15 +512,15 @@ HashTable* create_hashtable(CellKey* keys, int size) {
   HashTable* hv = (HashTable*)malloc(sizeof(HashTable));
   hv->size = size;
   while (keys) {
-    int pos = hash_function(keys,hv->size);
+    int pos = hash_function(keys->data,hv->size);
     if (!hv->tab[pos]) 
-      hv->tab[pos] = create_hashcell(keys);
+      hv->tab[pos] = create_hashcell(keys->data);
     else {
       int succ = 0;
       for (int i=pos;i<hv->size;i++) {
         if (!hv->tab[i]) {
           succ = 1;
-          hv->tab[i] = create_hashcell(keys);
+          hv->tab[i] = create_hashcell(keys->data);
         }
       }
       if (succ==0) {
@@ -560,13 +561,13 @@ Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, i
       printf("Voter information error\n");
       return NULL;
     }
-    else if (hv->tab[pos_voter]==1) {
+    else if (hv->tab[pos_voter]->val==1) {
       printf("Voter violation\n");
       return NULL;
     }
     else {
-      hc->tab[pos_cand]++;
-      hv->tab[pos_voter] = 1;
+      hc->tab[pos_cand]->val++;
+      hv->tab[pos_voter]->val = 1;
     }
     decl = decl->next;
   }
@@ -577,5 +578,55 @@ Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, i
     if (tab[i]->val>winner)
       winner = tab[i]->val;
   }
-  return tab[winner];
+  return tab[winner]->key;
 }
+
+
+
+
+/*Structure d'un block et persistance*/
+
+//Lecture et écriture de blocs
+void write_file_block(Block* b, char* file) {
+  char vote[PATH_MAX];
+  FILE* f = fopen(file,"w");
+  while (b->votes) {
+    sprintf(vote,"%s%s\n",vote,protected_to_str(b->votes->data));
+    b->votes = b->votes->next;
+  }
+  fprintf(f,"%s\n%s\n%s\n%d\n%s",key_to_str(b->author),b->hash,b->previous_hash,b->nonce,vote);
+  fclose(f);
+  return;
+}
+Block* read_file_block(char* file) {
+  FILE* f = fopen(file,"r");
+  char author[256], vote[PATH_MAX];
+  unsigned char hash[256], previous_hash[256];
+  int nonce;
+  char buffer[PATH_MAX];
+  fgets(buffer,PATH_MAX,f);
+  sscanf(buffer,"%s\n%s\n%s\n%d\n%s",author,hash,previous_hash,&nonce,vote);
+  fclose(f);
+
+  f = fopen(file,"w");
+  fprintf(f,"%s",vote);
+  CellProtected* votes = read_protected(file);
+
+  Block* b = (Block*)malloc(sizeof(Block));
+  b->author = str_to_key(author);
+  b->hash = hash;
+  b->previous_hash = previous_hash;
+  b->nonce = nonce;
+  b->votes = votes;
+  return b;
+}
+
+//Création de blocs valides
+unsigned char sha_256(const char* s) {
+  return SHA256(s,strlen(s),0);
+}
+void compute_proof_of_work(Block* B, int d) {
+
+}
+int verify_block(Block* B, int d);
+void delete_block(Block* B);

@@ -125,4 +125,26 @@ HashTable* create_hashtable(CellKey* keys, int size);
 void delete_hashtable(HashTable* t);
 Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV);
 
+
+
+
+/*Structure d'un block et persistance*/
+typedef struct block {
+	Key* author;
+	CellProtected* votes;
+	unsigned char* hash;
+	unsigned char* previous_hash;
+	int nonce;
+} Block;
+
+//Lecture et écriture de blocs
+void write_file_block(Block* b, char* file);
+Block* read_file_block(char* file);
+
+//Création de blocs valides
+unsigned char sha_256(const char* s);
+void compute_proof_of_work(Block* B, int d);
+int verify_block(Block* B, int d);
+void delete_block(Block* B);
+
 #endif

@@ -88,5 +88,8 @@ int main(void) {
   //printf("%s\t%s\t%s\n",key_to_str(p->pKey),p->mess,signature_to_str(p->sgn));
   
   //*/
+
+  unsigned char* s = "subgosbg";
+  printf("%s",s);
   return 0;
 }

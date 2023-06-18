@@ -1,4 +1,4 @@
-CFLAGS = -Wall -g -Wno-unused-parameter
+CFLAGS = -Wall -g -Wno-unused-parameter -lssl -lcrypto
 CC = gcc
 
 PROGRAMS = test temp
