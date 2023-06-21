@@ -89,7 +89,6 @@ int main(void) {
   
   //*/
 
-  unsigned char* s = "subgosbg";
-  printf("%s",s);
+  printf("%s\n",key_to_str(compute_winner(cp,read_public_keys("candidates.txt"),read_public_keys("keys.txt"),3,5)));
   return 0;
 }

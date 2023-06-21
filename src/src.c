@@ -511,24 +511,18 @@ int find_position(HashTable* t, Key* key) {
 HashTable* create_hashtable(CellKey* keys, int size) {
   HashTable* hv = (HashTable*)malloc(sizeof(HashTable));
   hv->size = size;
+  hv->tab = (HashCell**)malloc(sizeof(HashCell)*hv->size);
+  for (int i=0;i<hv->size;i++)
+    hv->tab[i] = NULL;
   while (keys) {
     int pos = hash_function(keys->data,hv->size);
-    if (!hv->tab[pos]) 
+    while (hv->tab[pos])
+      pos++;
+    if (pos<size) 
       hv->tab[pos] = create_hashcell(keys->data);
-    else {
-      int succ = 0;
-      for (int i=pos;i<hv->size;i++) {
-        if (!hv->tab[i]) {
-          succ = 1;
-          hv->tab[i] = create_hashcell(keys->data);
-        }
-      }
-      if (succ==0) {
-        printf("Memory limit exceeded. Unable to add keys to database\n");
-      }
-    }
     keys = keys->next;
   }
+  printf("done\n");
   return hv;
 }
 void delete_hashtable(HashTable* t) {
@@ -541,6 +535,7 @@ void delete_hashtable(HashTable* t) {
   return;
 }
 Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV) {
+  printf("ok1\n");
   HashTable* hc = create_hashtable(candidates,sizeC);
   HashTable* hv = create_hashtable(voters,sizeV);
   violation_filter(decl);
@@ -549,6 +544,7 @@ Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, i
     Key* voter = decl->data->pKey;
     int pos_cand = find_position(hc,candidat);
     int pos_voter = find_position(hv,voter);
+    printf("done\n");
     if (pos_cand==-1 || pos_voter==-1) {
       printf("Candidate or voter unavailable\n");
       return NULL;
@@ -623,7 +619,8 @@ Block* read_file_block(char* file) {
 
 //Création de blocs valides
 unsigned char sha_256(const char* s) {
-  return SHA256(s,strlen(s),0);
+  //return SHA256(s,strlen(s),0);
+  return 'a';
 }
 void compute_proof_of_work(Block* B, int d) {
 
