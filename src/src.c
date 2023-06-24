@@ -12,32 +12,28 @@
 /*PART 1*/
 /*RESOLUTION DU PROBLEME DE PRIMALITE*/
 int is_prime_naive(long p) {
-  if (!(p%2)) return 0; //verifier si p est impair
+  if (!(p%2)) return 0;
   for (int i=3;i<p;i++) {
-    if (!(p%i)) return 0; //s'il existe un entier entre e et p-1 divisant p, p n'est pas premier
+    if (!(p%i)) return 0;
   }
-  return 1; //si toutes conditions satisfaites, p est donc premier
+  return 1;
 }
 
-/*EXPONENTATION MODULAIRE RAPIDE*/
+/*exponentiation modulaire rapide*/
 long modpow_naive(long a, long m, long n) {
-  long res = 1;
-  while(m--) {
-    res*=a; //multiplier la valeur courante par a
-    res%=n; //applique mod n sur le resultat avant de passer a l'iteration suivante
+  long res = a%n;
+  while (m--) {
+    res*=a; res%=n;
   }
   return res;
 }
 int modpow(long a, long m, long n) {
-  if (m==0) 
-    return 1; //si m=0, cas de base
-  else if (m%2==0) 
-    return (modpow(a,m/2,n) * modpow(a,m/2,n)) % n; //m est pair
-  else 
-    return (a * modpow(a,floor(m/2),n) * modpow(a,floor(m/2),n)) % n; //m est impair
+  if (!m) return 1;
+  else if (!(m%2)) return (modpow(a,m/2,n) * modpow(a,m/2,n)) % n;
+  else return (a * modpow(a,floor(m/2),n) * modpow(a,floor(m/2),n)) % n;
 }
 
-/*TEST DE MILLER-RABIN*/
+/*test de miller-rabin*/
 int witness(long a, long b, long d, long p) {
   long x = modpow(a,d,p);
   if (x==1) return 0;
@@ -46,9 +42,8 @@ int witness(long a, long b, long d, long p) {
     x = modpow(x,2,p);
   }
   return 1;
- }
+}
 long rand_long(long low, long up) {
-  //srand(time(NULL));
   return rand() % (up-low+1) + low;
 }
 int is_prime_miller(long p, int k) {
@@ -70,11 +65,10 @@ int is_prime_miller(long p, int k) {
   return 1;
 }
 
-/*GENERATION DE NOMBRES PREMIERS*/
+/*generation des nombres premiers*/
 long random_prime_number(int low_size, int up_size, int k) {
-  //srand(time(NULL));
   long random = rand_long(low_size,up_size);
-  while (!is_prime_miller(random,k)) 
+  while (!is_prime_miller(random,k))
     random = rand_long(low_size,up_size);
   return random;
 }
@@ -98,12 +92,11 @@ void generate_key_values(long p, long q, long *n, long *s, long *u) {
   *n = p*q;
   long t = (p-1) * (q-1);
   long v = 1;
-  long sPrim = random_prime_number(0,t,1000);
+  long sPrim = random_prime_number(0,t,500);
   long uPrim = 0;
   while (extended_gcd(sPrim,t,&uPrim,&v)!=1 || sPrim==uPrim) {
-    sPrim = random_prime_number(0,t,1000);
+    sPrim = random_prime_number(0,t,500);
   }
-  //printf("s: %ld u: %ld\n",sPrim,uPrim);
   *s = sPrim;
   *u = uPrim;
   return;
@@ -111,24 +104,30 @@ void generate_key_values(long p, long q, long *n, long *s, long *u) {
 
 /*chiffrement et déchiffrement de messages*/
 long* encrypt(char* chaine, long s, long n) {
-  long* encr = (long*)malloc(sizeof(long)*strlen(chaine));
-  for(int i=0;chaine[i]!='\0';i++) {
-    encr[i] = modpow((long)chaine[i],s,n);
+  long* encrypted = (long*)malloc(strlen(chaine)*sizeof(long));
+  for (int i=0;i<strlen(chaine);i++) {
+    encrypted[i] = modpow((long)chaine[i],s,n);
   }
-  return encr;
+  return encrypted;
 }
 char* decrypt(long* crypted, long size, long u, long n) {
-  char* decr = (char*)malloc((size+1)*sizeof(char));
+  char* decrypted = (char*)malloc((size+1)*sizeof(char));
   for(int i=0;i<size;i++) {
-    decr[i] = (char)modpow(crypted[i],u,n);
+    decrypted[i] = (char)modpow(crypted[i],u,n);
   }
-  decr[size] = '\0';
-  return decr;
+  decrypted[size] = '\0';
+  return decrypted;
 }
 
 
 
-/*MANIPULATION DE STRUCTURES SECURISEES*/
+
+//============================================
+
+/*PART 2*/
+/*DECLARATIONS SECURISEES*/
+/*Structure for key manipulation*/
+
 /*manipulation des cles*/
 void init_key(Key* key, long val, long n) {
   key->val = val;
@@ -137,29 +136,27 @@ void init_key(Key* key, long val, long n) {
 }
 void init_pair_keys(Key* pKey, Key* sKey, long low_size, long up_size) {
   /*Generer 2 premiers p et q*/
-  
   long p = random_prime_number(low_size,up_size,5000);
-  long q = random_prime_number(low_size,45,5000);
-  while (p==q || q<43) 
-    q = random_prime_number(low_size,45,5000);
-  
-
+  //long q = random_prime_number(low_size,up_size_q,5000);
+  long q = ceil(129/p);
+  if (p==q || p*q<128) q++;
+  printf("p: %lu q: %lu\n",p,q);
   /*generer les 2 cles publiques et secretes*/
-  long n, s, u;
+  long n,s,u;
   generate_key_values(p,q,&n,&s,&u);
 
-  //pour avoir des cles positives
-  if (u<0) {
-    long t = (p-1)*(q-1);
-    u+=t; //on aura toujours s*u mod t = 1
+  if (u<0) { 
+    long t = (p-1) * (q-1);
+    u+=t;
   }
-  //initialiser les cles publiques et secretes
+
   init_key(pKey,s,n);
   init_key(sKey,u,n);
+  
   return;
 }
 char* key_to_str(Key* key) {
-  char* res = (char*)malloc(INT_MAX);
+  char* res = (char*)malloc(28);
   sprintf(res,"(%lx,%lx)",key->val,key->n);
   return res;
 }
@@ -171,8 +168,8 @@ Key* str_to_key(char* str) {
   return key;
 }
 
-
 /*signature*/
+
 Signature* init_signature(long* content, int size) {
   Signature* sgn = (Signature*)malloc(sizeof(Signature));
   sgn->content = content;
@@ -225,6 +222,7 @@ Signature* str_to_signature(char* str) {
 
 
 /*declarations signes*/
+
 Protected* init_protected(Key* pKey, char* mess, Signature* sgn) {
   Protected* pr = (Protected*)malloc(sizeof(Protected));
   pr->pKey = pKey;
@@ -246,384 +244,5 @@ Protected* str_to_protected(char* chaine) {
   return init_protected(str_to_key(key),mess,str_to_signature(sign));
 }
 
-
-
-
-
 /*creation de donnees pour simuler le processus de vote*/
-void generate_random_data(int nv, int nc) {
-  //srand(time(NULL));
-  
-  char buff[2000*sizeof(long)];
-
-  //nv couples de cles (publique, secrete) des nv citoyens
-  Key** l_key = (Key**)malloc(sizeof(Key*)*nv);
-  Key* pKey = (Key*)malloc(sizeof(Key));
-  Key* sKey = (Key*)malloc(sizeof(Key));
-  for (int i=0;i<nv;i++) {
-    init_pair_keys(pKey,sKey,3,200);
-    l_key[i] = (Key*)malloc(sizeof(Key));
-    l_key[i]->val = pKey->val;
-    l_key[i]->n = pKey->n;
-    sprintf(buff,"%s%s\n",buff,key_to_str(pKey));
-    //printf("l_key: %lx\n",l_key[i]->val);
-  }
-  FILE* f = fopen("keys.txt","w");
-  fprintf(f,"%s",buff);
-  fclose(f);
-
-  //list candidates de nc couples de cles publiques choisies aleatoirement
-  Key** l_candidat = (Key**)malloc(sizeof(Key*)*nc);
-;
-  int i=0;
-  char buff_c[2000*sizeof(long)];
-  while (i<nc) {
-    long rdm = rand_long(0,nv);
-    //printf("rdm: %ld\n",rdm);
-    l_candidat[i] = (Key*)malloc(sizeof(Key));
-    l_candidat[i]->val = l_key[rdm]->val;
-    l_candidat[i]->n = l_key[rdm]->n;
-    sprintf(buff_c,"%s%s\n",buff_c,key_to_str(l_candidat[i]));
-    i++;
-  }
-
-  f = fopen("candidates.txt","w");
-  fprintf(f,"%s",buff_c);
-  fclose(f);
-
-
-  f = fopen("declarations.txt","w");
-  char buff_d[2000*sizeof(long)];
-  for (i=0;i<nv;i++) {
-    long rdm = rand_long(0,nc);
-    //printf("rdm2: %ld\n",rdm);
-    Protected* p = init_protected(l_key[i],key_to_str(l_candidat[rdm]),sign(key_to_str(l_candidat[rdm]),l_key[i]));
-
-    sprintf(buff_d,"%s%s\n",buff_d,
-
-    protected_to_str(p)
-
-    );
-
-    printf("protected: %s\n",protected_to_str(p));
-  }
-  fprintf(f,"%s",buff_d);
-  fclose(f);
-  
-  return;
-}
-
-
-
-
-
-
-/*BASE DE DECLARATION CENTRALISEE*/
-/*Lecture et stockage des données dans des listes de chainées*/
-
-//Liste chainee de cles
-CellKey* create_cell_key(Key* key) {
-  CellKey* c = (CellKey*)malloc(sizeof(CellKey));
-  c->data = key;
-  c->next = NULL;
-  return c;
-}
-void insert_cell_key(CellKey** c, Key* key) {
-  if (!(*c)) *c = create_cell_key(key);
-  else {
-    CellKey* tmp = create_cell_key(key);
-    tmp->next = *c;
-    *c = tmp;
-  }
-  return;
-}
-CellKey* read_public_keys(char* file) {
-  if (strcmp(file,"keys.txt")!=0 && strcmp(file,"candidates.txt")!=0) { 
-    printf("Invalid file for candidates keys\n");
-    return NULL;
-  }
-  FILE* f = fopen(file,"r");
-  if (!f) {
-    printf("Unable to open %s\n",file);
-    return NULL;
-  }
-  char buffer[256];
-  //long val, n;
-  CellKey* c = NULL;
-  while (fgets(buffer,256,f)) {
-    //sscanf(buffer,"(%lx,%lx)\n",&val,&n);
-    Key* key = str_to_key(buffer);
-    //init_key(key,val,n);
-    insert_cell_key(&c,key);
-  }
-  fclose(f);
-  return c;
-}
-void print_list_keys(CellKey* LCK) {
-  if (LCK==NULL || (LCK->data->n==0 && LCK->data->val==0)) {
-    printf("Empty cell\n");
-    return;
-  }
-  while (LCK) {
-    printf("%s\n",key_to_str(LCK->data));
-    LCK = LCK->next;
-  }
-  return;
-}
-void delete_cell_keys(CellKey* c) {
-  if (!c->next) {
-    free(c->data);
-    free(c);
-    return;
-  }
-  CellKey* tmp = c->next;
-  free(c->data);
-  free(c);
-  c->data = tmp->data;
-  c->next = tmp->next;
-  return;
-}
-void delete_list_keys(CellKey* c) {
-  CellKey* tmp;
-  while (c) {
-    if (c->next) tmp = c->next;
-    else {
-      delete_cell_keys(c);
-      break;
-    }
-    delete_cell_keys(c);
-    c = tmp;
-  }
-  return;
-}
-
-//Liste chainee de declarations signees
-CellProtected* create_cell_protected(Protected* pr) {
-  CellProtected* cp = (CellProtected*)malloc(sizeof(CellProtected));
-  cp->data = pr;
-  cp->next = NULL;
-  return cp;
-}
-void insert_cell_protected(CellProtected** cp, Protected* pr) {
-  if (!(*cp)) *cp = create_cell_protected(pr);
-  else {
-    CellProtected* tmp = create_cell_protected(pr);
-    tmp->next = *cp;
-    *cp = tmp;
-  }
-  return;
-}
-CellProtected* read_protected(char* file) {
-  if (strcmp(file,"declarations.txt")!=0) {
-    printf("Invalid file for signed declarations");
-    return NULL;
-  }
-  FILE* f = fopen(file,"r");
-  if (!f) {
-    printf("Unable to open %s\n",file);
-    return NULL;
-  }
-  char buffer[2000];
-  //char key[500], mess[500],sgn[500];
-  CellProtected* cp = NULL;
-  while (fgets(buffer,256,f)) {
-    //printf("buffer: %s\n",buffer);
-    Protected* p = str_to_protected(buffer);
-    insert_cell_protected(&cp,p);
-  }
-  fclose(f);
-  return cp;
-}
-void print_list_protected(CellProtected* LCP) {
-  if (!LCP) { 
-    printf("No signed declaration found\n");
-    return;
-  }
-  while(LCP) {
-    printf("%s\n",protected_to_str(LCP->data));
-    LCP = LCP->next;
-  }
-  return;
-}
-void delete_cell_protected(CellProtected* c) {
-  if (!c->next) {
-    free(c->data);
-    free(c);
-    return;
-  }
-  CellProtected* tmp = c->next;
-  free(c->data);
-  free(c);
-  c->data = tmp->data;
-  c->next = tmp->next;
-  return;
-}
-void delete_list_protected(CellProtected* c) {
-  CellProtected* tmp;
-  printf("\n\n");
-  while (c) {
-    if (c->next) tmp = c->next;
-    else {
-      delete_cell_protected(c);
-      break;
-    }
-    delete_cell_protected(c);
-    c = tmp;
-    print_list_protected(c);
-    printf("\n\n");
-  }
-  return;
-}
-
-
-
-
-/*DETERMINATION DU GAGNANT DE L'ELECTION*/
-void violation_filter(CellProtected* cp) {
-  while (cp) {
-    if (!verify(cp->data)) delete_cell_protected(cp);
-    cp = cp->next;
-  }
-  return;
-}
-HashCell* create_hashcell(Key* key) {
-  HashCell* hc = (HashCell*)malloc(sizeof(HashCell));
-  hc->key = key;
-  hc->val = 0;
-  return hc;
-}
-int hash_function(Key* key, int size) {
-  return key->val % size;
-}
-int find_position(HashTable* t, Key* key) {
-  int pos = hash_function(key,t->size);
-  for (int i=pos;i<t->size;i++) {
-    if (t->tab[i]->key->val==key->val && t->tab[i]->key->n==key->val) 
-      return i;
-    else if (t->tab[i]->key->val==0 && t->tab[i]->key->n==0) {
-      printf("This candidate suppose to be in the position no.%d\n",i);
-      return i;
-    }
-  }
-  printf("Memory limit exceeded, no data found\n");
-  return -1;
-}
-HashTable* create_hashtable(CellKey* keys, int size) {
-  HashTable* hv = (HashTable*)malloc(sizeof(HashTable));
-  hv->size = size;
-  hv->tab = (HashCell**)malloc(sizeof(HashCell)*hv->size);
-  for (int i=0;i<hv->size;i++)
-    hv->tab[i] = NULL;
-  while (keys) {
-    int pos = hash_function(keys->data,hv->size);
-    while (hv->tab[pos])
-      pos++;
-    if (pos<size) 
-      hv->tab[pos] = create_hashcell(keys->data);
-    keys = keys->next;
-  }
-  printf("done\n");
-  return hv;
-}
-void delete_hashtable(HashTable* t) {
-  for (int i=0;i<t->size;i++) {
-    free(t->tab[i]->key);
-    free(t->tab[i]);
-  }
-  free(t->tab);
-  free(t);
-  return;
-}
-Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV) {
-  printf("ok1\n");
-  HashTable* hc = create_hashtable(candidates,sizeC);
-  HashTable* hv = create_hashtable(voters,sizeV);
-  violation_filter(decl);
-  while(decl) {
-    Key* candidat = str_to_key(decl->data->mess);
-    Key* voter = decl->data->pKey;
-    int pos_cand = find_position(hc,candidat);
-    int pos_voter = find_position(hv,voter);
-    printf("done\n");
-    if (pos_cand==-1 || pos_voter==-1) {
-      printf("Candidate or voter unavailable\n");
-      return NULL;
-    }
-    else if (!(hc->tab[pos_cand]->key->val!=candidat->val && hc->tab[pos_cand]->key->n!=candidat->n)) {
-      printf("Candidate information error\n");
-      return NULL;
-    }
-    else if (!(hv->tab[pos_voter]->key->val!=voter->val && hv->tab[pos_voter]->key->n!=voter->n)) {
-      printf("Voter information error\n");
-      return NULL;
-    }
-    else if (hv->tab[pos_voter]->val==1) {
-      printf("Voter violation\n");
-      return NULL;
-    }
-    else {
-      hc->tab[pos_cand]->val++;
-      hv->tab[pos_voter]->val = 1;
-    }
-    decl = decl->next;
-  }
-
-  HashCell** tab = hc->tab;
-  int winner = 0;
-  for (int i=0;i<hc->size;i++) {
-    if (tab[i]->val>winner)
-      winner = tab[i]->val;
-  }
-  return tab[winner]->key;
-}
-
-
-
-
-/*Structure d'un block et persistance*/
-
-//Lecture et écriture de blocs
-void write_file_block(Block* b, char* file) {
-  char vote[PATH_MAX];
-  FILE* f = fopen(file,"w");
-  while (b->votes) {
-    sprintf(vote,"%s%s\n",vote,protected_to_str(b->votes->data));
-    b->votes = b->votes->next;
-  }
-  fprintf(f,"%s\n%s\n%s\n%d\n%s",key_to_str(b->author),b->hash,b->previous_hash,b->nonce,vote);
-  fclose(f);
-  return;
-}
-Block* read_file_block(char* file) {
-  FILE* f = fopen(file,"r");
-  char author[256], vote[PATH_MAX];
-  unsigned char hash[256], previous_hash[256];
-  int nonce;
-  char buffer[PATH_MAX];
-  fgets(buffer,PATH_MAX,f);
-  sscanf(buffer,"%s\n%s\n%s\n%d\n%s",author,hash,previous_hash,&nonce,vote);
-  fclose(f);
-
-  f = fopen(file,"w");
-  fprintf(f,"%s",vote);
-  CellProtected* votes = read_protected(file);
-
-  Block* b = (Block*)malloc(sizeof(Block));
-  b->author = str_to_key(author);
-  b->hash = hash;
-  b->previous_hash = previous_hash;
-  b->nonce = nonce;
-  b->votes = votes;
-  return b;
-}
-
-//Création de blocs valides
-unsigned char sha_256(const char* s) {
-  //return SHA256(s,strlen(s),0);
-  return 'a';
-}
-void compute_proof_of_work(Block* B, int d) {
-
-}
-int verify_block(Block* B, int d);
-void delete_block(Block* B);
+void generate_random_data(int nv, int nc);
