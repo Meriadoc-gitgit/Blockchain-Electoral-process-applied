@@ -50,5 +50,17 @@ int main(void) {
   printf("%s\n",decrypt(sgn2->content,strlen(key_to_str(pKey)),sKey->val,sKey->n));
 
   printf("verification: %d\n",verify(init_protected(pKey,key_to_str(pKey2),sign(key_to_str(pKey2),sKey)))); //ok
+
+
+  Protected* pr = init_protected(pKey,key_to_str(pKey2),sign(key_to_str(pKey2),sKey));
+  printf("pr: %s\n",protected_to_str(pr));
+  printf("inverse pr: %s\n",protected_to_str(str_to_protected(protected_to_str(pr))));
+
+
+
+
+
+  printf("\n\n");
+  generate_random_data(5,4);
   return 0;
 }

@@ -140,7 +140,7 @@ void init_pair_keys(Key* pKey, Key* sKey, long low_size, long up_size) {
   //long q = random_prime_number(low_size,up_size_q,5000);
   long q = ceil(129/p);
   if (p==q || p*q<128) q++;
-  printf("p: %lu q: %lu\n",p,q);
+  //printf("p: %lu q: %lu\n",p,q);
   /*generer les 2 cles publiques et secretes*/
   long n,s,u;
   generate_key_values(p,q,&n,&s,&u);
@@ -245,4 +245,68 @@ Protected* str_to_protected(char* chaine) {
 }
 
 /*creation de donnees pour simuler le processus de vote*/
-void generate_random_data(int nv, int nc);
+void generate_random_data(int nv, int nc) {
+
+  //nv couples de cles (publique, secrete) des nv citoyens
+  char buff_pub[2000*sizeof(long)];
+  char buff_private[2000*sizeof(long)];
+
+  Key* src_public[nv];
+  Key* src_private[nv];
+
+  Key* pKey = (Key*)malloc(sizeof(Key));
+  Key* sKey = (Key*)malloc(sizeof(Key));
+
+  for(int i=0;i<nv;i++) {
+    init_pair_keys(pKey,sKey,3,11);
+    src_public[i] = (Key*)malloc(sizeof(Key));
+    src_private[i] = (Key*)malloc(sizeof(Key));
+
+    src_public[i]->val = pKey->val;
+    src_public[i]->n = pKey->n;
+
+    src_private[i]->val = sKey->val;
+    src_private[i]->n = sKey->n;
+
+    sprintf(buff_pub,"%s%s\n",buff_pub,key_to_str(pKey));
+    sprintf(buff_private,"%s%s\n",buff_private,key_to_str(sKey));
+  }
+  FILE* f = fopen("keys.txt","w");
+  fprintf(f,"%s",buff_pub);
+  fclose(f);
+
+  //list candidates de nc couples de cles publiques choisies aleatoirement
+  Key* candidates[nc];
+  char buff_c[2000*sizeof(long)];
+  int i=0;
+  while (i<nc) {
+    long random = rand_long(0,nv);
+    candidates[i] = (Key*)malloc(sizeof(Key));
+    candidates[i]->val = src_public[random]->val;
+    candidates[i]->n = src_public[random]->n;
+    sprintf(buff_c,"%s%s\n",buff_c,key_to_str(src_public[random]));
+    i++;
+  }
+  f = fopen("candidates.txt","w");
+  fprintf(f,"%s",buff_c);
+  fclose(f);
+
+  char buff_d[2000*sizeof(long)];
+  for(i=0;i<nv;i++) {
+    long random = rand_long(0,nc);
+    Protected* pr = init_protected(
+      src_public[i],
+      key_to_str(candidates[random]),
+      sign(
+        key_to_str(candidates[random]),
+        src_private[i]
+      )
+    );
+    sprintf(buff_d,"%s%s\n",buff_d,protected_to_str(pr));
+  }
+  f = fopen("declarations.txt","w");
+  fprintf(f,"%s",buff_d);
+  fclose(f);
+
+  return;
+}
