@@ -417,9 +417,92 @@ CellProtected* create_cell_protected(Protected* pr) {
   return cp;
 }
 void insert_cell_protected(CellProtected** cp, Protected* pr) {
-  
+  if (!(*cp)) {
+    *cp = create_cell_protected(pr);
+    return;
+  }
+  CellProtected* tmp = create_cell_protected(pr);
+  tmp->next = *cp;
+  *cp = tmp;
+  return;
 }
-CellProtected* read_protected(char* file);
-void print_list_protected(CellProtected* LCP);
-void delete_cell_protected(CellProtected* c);
-void delete_list_protected(CellProtected* c);
+CellProtected* read_protected(char* file) {
+
+  //FILE name verification
+  if (strcmp(file,"declarations.txt")!=0) {
+    printf("Invalid file to access to signed declarations database\n");
+    exit(-1);
+  }
+
+  //open FILE
+  FILE* f = fopen(file,"r");
+  if (!f) { ///verification
+    printf("Unable to open %s\n",file);
+    exit(-1);
+  }
+
+  //insert Protected to CellProtected
+  char buffer[256];
+  CellProtected* c = NULL;
+  while (fgets(buffer,256,f)) {
+    Protected* pr = str_to_protected(buffer);
+    insert_cell_protected(&c,pr);
+  }
+  fclose(f);
+  return c;
+}
+void print_list_protected(CellProtected* LCP) {
+  if (!LCP) {
+    printf("Empty list\n");
+    return;
+  }
+  while (LCP) {
+    printf("%s\n",protected_to_str(LCP->data));
+    LCP = LCP->next;
+  }
+  return;
+}
+void delete_cell_protected(CellProtected* c) {
+  if (!c) {
+    printf("Empty CellProtected\n");
+    return;
+  }
+  if (c->next) { //if CellProtected contains only 1 element
+    free(c->data->pKey);
+    free(c->data->sgn);
+    free(c->data->mess);
+    free(c->data);
+    free(c);
+    c = NULL;
+    return;
+  }
+  if (!c->data && !c->next) {
+    free(c);
+    c = NULL;
+    return;
+  }
+  CellProtected* tmp = c->next;
+  free(c->data);
+  free(c);
+  c = (CellProtected*)malloc(sizeof(CellProtected));
+  c->data->pKey = tmp->data->pKey;
+  c->data->sgn = tmp->data->sgn;
+  c->data->mess = strdup(tmp->data->mess);
+  c->next = tmp->next;
+  return;
+}
+void delete_list_protected(CellProtected* c) {
+  if (!c) {
+    printf("Empty CellProtected\n");
+    return;
+  }
+  while (c) {
+    if (!c->next) {
+      delete_cell_protected(c);
+      break;
+    }
+    delete_cell_protected(c);
+  }
+  c = NULL;
+  return;
+}
