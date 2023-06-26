@@ -310,3 +310,116 @@ void generate_random_data(int nv, int nc) {
 
   return;
 }
+
+
+
+/*PART 3*/
+/*BASE DE DECLARATION CENTRALISEE*/
+/*Lecture et stockage des données dans des listes de chainées*/
+
+CellKey* create_cell_key(Key* key) {
+  CellKey* c = (CellKey*)malloc(sizeof(CellKey));
+  c->data = key;
+  c->next = NULL;
+  return c;
+}
+void insert_cell_key(CellKey** c, Key* key) {
+  if (!(*c)) {
+    *c = create_cell_key(key);
+    return;
+  }
+  CellKey* tmp = create_cell_key(key);
+  tmp->next = *c;
+  *c = tmp;
+  return;
+}
+CellKey* read_public_keys(char* file) {
+
+  // FILE name verification
+  if (strcmp(file,"keys.txt")!=0 && strcmp(file,"candidates.txt")!=0) {
+    printf("Invalid file to access to citizen database\n");
+    exit(-1);
+  }
+
+  //open FILE
+  FILE* f = fopen(file,"r");
+  if (!f) { //verification
+    printf("Unable to open %s\n",file);
+    exit(-1);
+  }
+
+  //insert Key to CellKey
+  char buffer[256];
+  CellKey* c = NULL;
+  while (fgets(buffer,256,f)) {
+    Key* key = str_to_key(buffer);
+    insert_cell_key(&c,key);
+  }
+  fclose(f);
+  return c;
+}
+void print_list_keys(CellKey* LCK) { //ok
+  if (!LCK) {
+    printf("Empty list\n");
+    return;
+  }
+  while (LCK) {
+    printf("%s\n",key_to_str(LCK->data));
+    LCK = LCK->next;
+  }
+  return;
+}
+void delete_cell_keys(CellKey* c) {
+  if (!c) {
+    printf("Empty CellKey\n");
+    return;
+  }
+  if (!c->next) { //if CellKey contains only 1 element
+    free(c->data);
+    free(c);
+    c = NULL;
+    return;
+  }
+  if (!c->data && !c->next) {
+    free(c);
+    c = NULL;
+    return;
+  }
+  CellKey* tmp = c->next;
+  free(c->data);
+  free(c);
+  c = (CellKey*)malloc(sizeof(CellKey));
+  c->data = tmp->data;
+  c->next = tmp->next;
+  return;
+}
+void delete_list_keys(CellKey* c) {
+  if (!c) {
+    printf("Empty CellKey\n");
+    return;
+  }
+  while (c) {
+    if (!c->next) {
+      delete_cell_keys(c);
+      break;
+    }
+    delete_cell_keys(c);
+  }
+  c = NULL;
+  return;
+}
+
+
+CellProtected* create_cell_protected(Protected* pr) {
+  CellProtected* cp = (CellProtected*)malloc(sizeof(CellProtected));
+  cp->data = pr;
+  cp->next = NULL;
+  return cp;
+}
+void insert_cell_protected(CellProtected** cp, Protected* pr) {
+  
+}
+CellProtected* read_protected(char* file);
+void print_list_protected(CellProtected* LCP);
+void delete_cell_protected(CellProtected* c);
+void delete_list_protected(CellProtected* c);

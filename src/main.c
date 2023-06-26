@@ -18,49 +18,16 @@ int main(void) {
   
   srand(time(NULL));
   
-  long p = 3, q = 111;
-  long n, s, u;
-  generate_key_values(p,q,&n,&s,&u);
-  printf("%lu %lu %lu\n",n,s,u);
+  CellKey* c = read_public_keys("keys.txt");
 
-  Key* pKey = (Key*)malloc(sizeof(Key));
-  Key* sKey = (Key*)malloc(sizeof(Key));
-
-  Key* pKey2 = (Key*)malloc(sizeof(Key));
-  Key* sKey2 = (Key*)malloc(sizeof(Key));
-
-  init_pair_keys(pKey,sKey,3,11);
-
-  init_pair_keys(pKey2,sKey2,5,25);
-
-  printf("pKey: %s\nsKey: %s\n",key_to_str(pKey),key_to_str(sKey));
-
-  printf("%s\n",key_to_str(str_to_key(key_to_str(pKey))));
-
-
-  Signature* sgn = sign(key_to_str(pKey),sKey);
-
-  printf("%s\n",signature_to_str(sgn));
-
-  Signature* sgn2 = str_to_signature(signature_to_str(sgn));
-
-  printf("%s\n",signature_to_str(sgn2));
-
-
-  printf("%s\n",decrypt(sgn2->content,strlen(key_to_str(pKey)),sKey->val,sKey->n));
-
-  printf("verification: %d\n",verify(init_protected(pKey,key_to_str(pKey2),sign(key_to_str(pKey2),sKey)))); //ok
-
-
-  Protected* pr = init_protected(pKey,key_to_str(pKey2),sign(key_to_str(pKey2),sKey));
-  printf("pr: %s\n",protected_to_str(pr));
-  printf("inverse pr: %s\n",protected_to_str(str_to_protected(protected_to_str(pr))));
-
-
-
-
+  print_list_keys(c);
+  delete_cell_keys(c);
+  printf("\n\n");
+  print_list_keys(c);
 
   printf("\n\n");
-  generate_random_data(5,4);
+
+  delete_list_keys(c);
+  print_list_keys(NULL);
   return 0;
 }

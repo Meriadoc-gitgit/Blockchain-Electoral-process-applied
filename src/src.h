@@ -73,6 +73,7 @@ void generate_random_data(int nv, int nc);
 
 
 
+/*PART 3*/
 /*BASE DE DECLARATION CENTRALISEE*/
 /*Lecture et stockage des données dans des listes de chainées*/
 
