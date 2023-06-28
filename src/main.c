@@ -35,13 +35,7 @@ int main(void) {
 
   CellProtected* cp = read_protected("declarations.txt");
 
-  print_list_protected(cp);
-  delete_cell_protected(cp);
-  printf("\n\n");
-  print_list_protected(cp);
-
-  printf("\n\n");
-  delete_list_protected(cp);
+  printf("\nCellProtected cp : \n");
   print_list_protected(cp);
   printf("\n\n");
   return 0;

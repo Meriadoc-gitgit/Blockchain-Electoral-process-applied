@@ -463,46 +463,19 @@ void print_list_protected(CellProtected* LCP) {
   return;
 }
 void delete_cell_protected(CellProtected* c) {
-  if (!c) {
-    printf("Empty CellProtected\n");
-    return;
+  /*
+  struct CellProtected : 
+    struct Protected
+      char mess
+      struct Key
+      struct Signature
+        *long
+  => free(cp) = free(long) + free(sgn)
+                  + free(mess) + free(key)
+                    + free(pr) + free(cp)
+  */
+  if (c->next) {
+    
   }
-  if (c->next) { //if CellProtected contains only 1 element
-    free(c->data->pKey);
-    free(c->data->sgn);
-    free(c->data->mess);
-    free(c->data);
-    free(c);
-    c = NULL;
-    return;
-  }
-  if (!c->data && !c->next) {
-    free(c);
-    c = NULL;
-    return;
-  }
-  CellProtected* tmp = c->next;
-  free(c->data);
-  free(c);
-  c = (CellProtected*)malloc(sizeof(CellProtected));
-  c->data->pKey = tmp->data->pKey;
-  c->data->sgn = tmp->data->sgn;
-  c->data->mess = strdup(tmp->data->mess);
-  c->next = tmp->next;
-  return;
 }
-void delete_list_protected(CellProtected* c) {
-  if (!c) {
-    printf("Empty CellProtected\n");
-    return;
-  }
-  while (c) {
-    if (!c->next) {
-      delete_cell_protected(c);
-      break;
-    }
-    delete_cell_protected(c);
-  }
-  c = NULL;
-  return;
-}
+void delete_list_protected(CellProtected* c);
