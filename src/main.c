@@ -38,5 +38,9 @@ int main(void) {
   printf("\nCellProtected cp : \n");
   print_list_protected(cp);
   printf("\n\n");
+  delete_cell_protected(cp);
+  print_list_protected(cp);
+  delete_list_protected(cp);
+  //print_list_protected(cp);
   return 0;
 }

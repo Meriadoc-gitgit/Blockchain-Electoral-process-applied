@@ -474,8 +474,101 @@ void delete_cell_protected(CellProtected* c) {
                   + free(mess) + free(key)
                     + free(pr) + free(cp)
   */
-  if (c->next) {
-    
+  if (!c) return;
+  if (!c->next) {
+    free(c->data->sgn->content);
+    free(c->data->mess);
+    free(c->data->pKey);
+    free(c->data);
+    free(c);
+    return;
   }
+  CellProtected* tmp = c->next;
+  free(c->data->sgn->content);
+  free(c->data->mess);
+  free(c->data->pKey);
+  free(c->data);
+  free(c);
+  c = (CellProtected*)malloc(sizeof(CellProtected));
+  c->data = tmp->data;
+  c->next = tmp->next;
+  return;
 }
-void delete_list_protected(CellProtected* c);
+void delete_list_protected(CellProtected* c) {
+  if (!c) return;
+  while (c) {
+    if (!c->next) {
+      delete_cell_protected(c);
+      break;
+    }
+    delete_cell_protected(c);
+  }
+  return;
+}
+
+
+
+/*DETERMINATION DU GAGNANT DE L'ELECTION*/
+void violation_filter(CellProtected* cp) {
+  if (!cp) {
+    printf("Empty list, violation not found\n");
+    return;
+  }
+  while (cp) {
+    if (verify(cp->data)==0) {
+      printf("Violation detected\n");
+      delete_cell_protected(cp);
+    }
+    cp = cp->next;
+  }
+  return;
+}
+
+HashCell* create_hashcell(Key* key) {
+  HashCell* hc = (HashCell*)malloc(sizeof(HashCell));
+  hc->key = key;
+  hc->val = 0; 
+  return hc;
+}
+int hash_function(Key* key, int size) {
+  return key->val % size;
+}
+int find_position(HashTable* t, Key* key) {
+  int pos = hash_function(key,t->size);
+  while (pos<t->size) {
+    if (t->tab[pos]->key->val==key->val && t->tab[pos]->key->n==key->n) {
+      return pos;
+    }
+    else if (t->tab[pos]->key->val==0 && t->tab[pos]->key->n==0) {
+      return pos;
+    }
+    pos++;
+  }
+  return pos;
+}
+HashTable* create_hashtable(CellKey* keys, int size) {
+  HashTable* ht = (HashTable*)malloc(sizeof(HashTable));
+  ht->size = size;
+  ht->tab = (HashCell**)malloc(sizeof(HashCell*)*size);
+  while (keys) {
+    int pos = hash_function(keys->data,size);
+    while (ht->tab[pos]) {
+      pos++;
+    }
+    if (pos<size) {
+      ht->tab[pos] = create_hashcell(keys->data);
+    }
+    keys = keys->next;
+  }
+  return ht;
+}
+void delete_hashtable(HashTable* t) {
+  for (int i=0;i<t->size;i++) {
+    free(t->tab[i]->key);
+    free(t->tab[i]);
+  }
+  free(t->tab);
+  free(t);
+  return;
+}
+Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV);
