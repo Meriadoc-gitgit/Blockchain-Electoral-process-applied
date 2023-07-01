@@ -511,14 +511,15 @@ void delete_list_protected(CellProtected* c) {
 /*DETERMINATION DU GAGNANT DE L'ELECTION*/
 void violation_filter(CellProtected* cp) {
   if (!cp) {
-    printf("Empty list, violation not found\n");
+    printf("Empty list, no violation found\n");
     return;
   }
   while (cp) {
+    /*
     if (verify(cp->data)==0) {
       printf("Violation detected\n");
       delete_cell_protected(cp);
-    }
+    }*/
     cp = cp->next;
   }
   return;
@@ -544,7 +545,8 @@ int find_position(HashTable* t, Key* key) {
     }
     pos++;
   }
-  return pos;
+  
+  return -1;
 }
 HashTable* create_hashtable(CellKey* keys, int size) {
   HashTable* ht = (HashTable*)malloc(sizeof(HashTable));
@@ -571,4 +573,34 @@ void delete_hashtable(HashTable* t) {
   free(t);
   return;
 }
-Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV);
+Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV) {
+  HashTable* hc = create_hashtable(candidates,sizeC);
+  HashTable* hv = create_hashtable(voters,sizeV);
+  violation_filter(decl);
+
+  while (decl) {
+    int pos = find_position(hc,str_to_key(decl->data->mess));
+    if (pos==-1) {
+      //delete_cell_protected(decl);
+    }
+    else {
+      int pos_voter = find_position(hv,decl->data->pKey);
+      //if (hv->tab[pos_voter]==0) {
+        printf("ok\n");
+        hv->tab[pos_voter]->val = 1;
+        hc->tab[pos]->val++;
+      //}
+    }
+    decl = decl->next;
+  }
+  int winner = 0;
+  for (int i=0;i<hc->size;i++) {
+    if (hc->tab[i]!=NULL) {
+      if (hc->tab[i]->val>winner) {
+        printf(";aojgb\n");
+        winner = hc->tab[i]->val;
+      }
+    }
+  }
+  return hc->tab[winner]->key;
+}

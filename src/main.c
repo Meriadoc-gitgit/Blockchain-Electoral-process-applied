@@ -19,7 +19,9 @@ int main(void) {
   srand(time(NULL));
   
   CellKey* c = read_public_keys("keys.txt");
+  CellKey* c2 = read_public_keys("candidates.txt");
 
+  /*
   print_list_keys(c);
   delete_cell_keys(c);
   printf("\n\n");
@@ -29,18 +31,23 @@ int main(void) {
 
   delete_list_keys(c);
   print_list_keys(NULL);
-
-
+*/
 
 
   CellProtected* cp = read_protected("declarations.txt");
 
-  printf("\nCellProtected cp : \n");
-  print_list_protected(cp);
-  printf("\n\n");
-  delete_cell_protected(cp);
-  print_list_protected(cp);
-  delete_list_protected(cp);
+  /*while (cp) {
+    printf("verify: %d\n",verify(cp->data));
+    cp = cp->next;
+  }*/
+  //printf("\nCellProtected cp : \n");
   //print_list_protected(cp);
+  printf("\n\n");
+  //delete_cell_protected(cp);
+  //print_list_protected(cp);
+  //delete_list_protected(cp);
+  //print_list_protected(cp);
+
+  printf("%s\n",key_to_str(compute_winner(cp,c,c2,10,10)));
   return 0;
 }
