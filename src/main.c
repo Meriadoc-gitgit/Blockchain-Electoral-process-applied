@@ -18,8 +18,12 @@ int main(void) {
   
   srand(time(NULL));
   
-  CellKey* c = read_public_keys("keys.txt");
+  //CellKey* c = read_public_keys("keys.txt");
   CellKey* c2 = read_public_keys("candidates.txt");
+  while (c2) {
+    printf("%s\n",key_to_str(c2->data));
+    c2 = c2->next;
+  }
 
   /*
   print_list_keys(c);
@@ -44,10 +48,13 @@ int main(void) {
   //print_list_protected(cp);
   printf("\n\n");
   //delete_cell_protected(cp);
-  //print_list_protected(cp);
+  print_list_protected(cp);
   //delete_list_protected(cp);
   //print_list_protected(cp);
 
-  printf("%s\n",key_to_str(compute_winner(cp,c,c2,10,10)));
-  return 0;
+  HashTable* ht = create_hashtable(c2,5);
+
+  for (int i=0;i<5;i++) {
+    printf("%s\n",key_to_str(ht->tab[i]->key));
+  }
 }
